@@ -284,6 +284,18 @@ void execute() {
          misc_ops = decode(misc);
          switch(misc_ops) {
             case MISC_PUSH:
+               BitCount = countBits(misc.instr.push.reg_list);
+               addr = SP - 4 * BitCount; // Number of registers
+               
+               for (i = 0; i < 14; i++) {
+                  if (misc.instr.push.reg_list & (int) pow(2, i)) {
+                     dmem.write(addr, rf[i]);
+                     addr += 4;
+                  }
+               }
+               
+               rf.write(SP_REG, SP - 4 * BitCount);
+               
                break;
             case MISC_POP:
                break;
