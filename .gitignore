@@ -121,3 +121,5 @@ cpe315_thumbsim/DerivedData/ThumbSimXcode/Index/Debug/macosx10.11-x86_64/ThumbSi
 *.idx
 
 *.plist
+
+*.xcbkptlist
