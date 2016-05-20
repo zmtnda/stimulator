@@ -105,73 +105,61 @@ static int checkCondition(unsigned short cond) {
     case CS:
      if (flags.C == 1)
          return TRUE;
-      }
       break;
     /*carry clear*/
     case CC:
      if (flags.C == 0)
          return TRUE;
-      }
       break;
     /*Minus, negative*/
     case MI:
      if (flags.N == 1)
          return TRUE;
-      }
      break;
     /*plus, positive or zero*/
     case PL:
      if (flags.N == 0)
          return TRUE;
-      }
       break;
     /*Overflow*/
     case VS:
      if (flags.V == 1)
          return TRUE;
-      }
       break;
     /*NO overflow*/
     case VC:
       if (flags.V == 0)
           return TRUE;
-       }
       break;
     /*unsigned higher*/
     case HI:
-     if (flags.C == 1 && Z == 0)
+     if (flags.C == 1 && flags.Z == 0)
          return TRUE;
-      }
       break;
     /*unsigned lower or same*/
     case LS:
-     if (flags.C == 0 && Z == 1)
+     if (flags.C == 0 && flags.Z == 1)
          return TRUE;
-      }
       break;
     /*signed >=*/
     case GE:
      if (flags.N == flags.V)
          return TRUE;
-      }
       break;
     /*signed <*/
     case LT:
      if (flags.N !=flags.V)
          return TRUE;
-      }
       break;
     /*signed >*/
     case GT:
      if (flags.Z == 0 && flags.N == flags.V)
          return TRUE;
-      }
       break;
     /*signed <=*/
     case LE:
      if (flags.Z == 1 || flags.N != flags.V)
          return TRUE;
-      }
       break;
     case AL:
       return TRUE;
