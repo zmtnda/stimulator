@@ -235,24 +235,27 @@ void execute() {
                break;
             case ALU_ADDR:
                //cout << "adds r" << data.instr.addr.rd  << ", r" << data.instr.addr.rn << ", r" << data.instr.addr.rm << endl;
-               rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);
+               rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);     // Original
                break;
             case ALU_SUBR:
                break;
             case ALU_ADD3I:
-               rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);
+               rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);     // Original
                break;
             case ALU_SUB3I:
+               rf.write(alu.instr.sub3i.rd, rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
                break;
             case ALU_MOV:
-               rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);
+               rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);                                  // Original
                break;
             case ALU_CMP:
+               setCarryOverflow(alu.instr.cmp.rdn, alu.instr.cmp.rdn, OF_SUB);
                break;
             case ALU_ADD8I:
-               rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);
+               rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);    // Original
                break;
             case ALU_SUB8I:
+               rf.write(alu.instr.sub8i.rdn, rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
                break;
             default:
                break;

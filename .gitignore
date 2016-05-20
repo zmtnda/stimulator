@@ -129,3 +129,11 @@ cpe315_thumbsim/thumbsim
 cpe315_thumbsim/thumbsim.dSYM/Contents/Resources/DWARF/thumbsim
 
 cpe315_thumbsim/thumbsim
+
+*.o
+
+cpe315_thumbsim/myFib.out
+
+cpe315_thumbsim/DerivedData/ThumbSimXcode/Build/Intermediates/ThumbSimXcode.build/Debug/ThumbSimXcode.build/Objects-normal/x86_64/ThumbSimXcode_dependency_info.dat
+
+cpe315_thumbsim/DerivedData/ThumbSimXcode/Build/Products/Debug/ThumbSimXcode
