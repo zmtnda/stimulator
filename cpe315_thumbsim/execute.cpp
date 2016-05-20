@@ -238,6 +238,7 @@ void execute() {
                rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);     // Original
                break;
             case ALU_SUBR:
+               rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] - rf[alu.instr.subr.rm]);
                break;
             case ALU_ADD3I:
                rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);     // Original
@@ -249,7 +250,7 @@ void execute() {
                rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);                                  // Original
                break;
             case ALU_CMP:
-               setCarryOverflow(alu.instr.cmp.rdn, alu.instr.cmp.rdn, OF_SUB);
+               setCarryOverflow(alu.instr.cmp.rdn, alu.instr.cmp.imm, OF_SUB);
                break;
             case ALU_ADD8I:
                rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);    // Original
