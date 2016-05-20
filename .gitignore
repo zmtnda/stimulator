@@ -129,3 +129,7 @@ cpe315_thumbsim/thumbsim
 cpe315_thumbsim/thumbsim.dSYM/Contents/Resources/DWARF/thumbsim
 
 cpe315_thumbsim/thumbsim
+
+*.o
+
+cpe315_thumbsim/myFib.out
