@@ -298,6 +298,22 @@ void execute() {
                
                break;
             case MISC_POP:
+               BitCount = countBits(misc.instr.pop.reg_list);
+               addr = SP;
+               
+               for (i = 0; i < 7; i++) {
+                  if (misc.instr.pop.reg_list & (int) pow(2, i)) {
+                     rf.write(i, dmem[addr]);
+                     addr += 4;
+                  }
+               }
+               
+               if (rf[SP]) {
+                  rf.write(SP, dmem[addr]);
+               }
+               
+               rf.write(SP_REG, SP - 4 * BitCount);
+               
                break;
             case MISC_SUB:
                rf.write(SP_REG, SP - (misc.instr.sub.imm*4));
