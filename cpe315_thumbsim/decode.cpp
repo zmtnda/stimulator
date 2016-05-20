@@ -101,6 +101,7 @@ ALU_Ops decode (const ALU_Type data) {
     return ALU_ADD3I;
   }
   else if (data.instr.sub3i.op == ALU_SUB3I_OP) {
+      return ALU_SUB3I;
   }
   else if (data.instr.add8i.op == ALU_ADD8I_OP) {
     if (opts.instrs) { 
@@ -109,7 +110,7 @@ ALU_Ops decode (const ALU_Type data) {
     return ALU_ADD8I;
   }
   else if (data.instr.sub8i.op == ALU_SUB8I_OP) {
-
+   return ALU_SUB8I;
   }
   else if (data.instr.cmp.op == ALU_CMP_OP) { 
     if (opts.instrs) { 
