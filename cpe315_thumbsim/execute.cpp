@@ -129,31 +129,18 @@ static int checkCondition(unsigned short cond) {
   return FALSE;
 }
 
-void execute() {
-  Data16 instr = imem[PC];
-  Data16 instr2;
-  Data32 temp(0);
-  Thumb_Types itype;
-  unsigned int pctarget = PC + 2;
-  unsigned int addr;
-  int i, n, offset;
-  unsigned int list, mask;
-  int num1, num2, result, BitCount;
-  unsigned int bit;
-
-  /* Convert instruction to correct type */
-  BL_Type blupper(instr);
-  ALU_Type alu(instr);
-  SP_Type sp(instr);
-  DP_Type dp(instr);
-  LD_ST_Type ld_st(instr);
-  MISC_Type misc(instr);
-  COND_Type cond(instr);
-  UNCOND_Type uncond(instr);
-  LDM_Type ldm(instr);
-  STM_Type stm(instr);
-  LDRL_Type ldrl(instr);
-  ADD_SP_Type addsp(instr);
+/* DO I ACTUALLY NEED THIS? */
+int countBits(int toCount) {
+   int numBits = 0;
+   int mask = 0x01;
+   
+   while (toCount) {
+      numBits += toCount & mask;
+      toCount >>= 1;
+   }
+   
+   return numBits;
+}
 
 void execute() {
    Data16 instr = imem[PC];
