@@ -130,7 +130,7 @@ static int checkCondition(unsigned short cond) {
 }
 
 /* DO I ACTUALLY NEED THIS? */
-int countBits(int toCount) {
+int countBits(int toCount, int mBit) {
    int numBits = 0;
    int mask = 0x01;
    
@@ -138,6 +138,8 @@ int countBits(int toCount) {
       numBits += toCount & mask;
       toCount >>= 1;
    }
+   
+   numBits += 0x1 & mBit;
    
    return numBits;
 }
@@ -283,32 +285,44 @@ void execute() {
          misc_ops = decode(misc);
          switch(misc_ops) {
             case MISC_PUSH:
-               BitCount = countBits(misc.instr.push.reg_list);
+               BitCount = countBits(misc.instr.push.reg_list, misc.instr.push.m);    // Don't forget to count m bit
                addr = SP - 4 * BitCount; // Number of registers
                
-               for (i = 0; i < 14; i++) {
+//               cerr << "Made it to Push\n";                                          // Debug, remove later
+               
+               for (i = 0; i < 8; i++) {
+//                  cerr << "\tShould I push r" << i << " ?\n";                                          // Debug, remove later
                   if (misc.instr.push.reg_list & (int) pow(2, i)) {
+//                     cerr << "\t\tPushing r" << i << "\n";                                          // Debug, remove later
                      dmem.write(addr, rf[i]);
                      addr += 4;
                   }
+               }
+               
+               if (misc.instr.push.m & 0x1) {
+                  dmem.write(addr, LR);
                }
                
                rf.write(SP_REG, SP - 4 * BitCount);
                
                break;
             case MISC_POP:
-               BitCount = countBits(misc.instr.pop.reg_list);
+               BitCount = countBits(misc.instr.pop.reg_list, misc.instr.pop.m);
                addr = SP;
                
-               for (i = 0; i < 7; i++) {
+//               cerr << "Made it to Pop\n";                                          // Debug, remove later
+               
+               for (i = 0; i < 8; i++) {
+//                  cerr << "\tShould I pop r" << i << " ?\n";                                          // Debug, remove later
                   if (misc.instr.pop.reg_list & (int) pow(2, i)) {
+//                     cerr << "\t\tPopping r" << i << "\n";                                          // Debug, remove later
                      rf.write(i, dmem[addr]);
                      addr += 4;
                   }
                }
                
-               if (rf[SP]) {
-                  rf.write(SP, dmem[addr]);
+               if (misc.instr.pop.m & 0x1) {
+                  rf.write(PC_REG, dmem[addr]);
                }
                
                rf.write(SP_REG, SP - 4 * BitCount);
