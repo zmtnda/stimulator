@@ -123,3 +123,9 @@ cpe315_thumbsim/DerivedData/ThumbSimXcode/Index/Debug/macosx10.11-x86_64/ThumbSi
 *.plist
 
 *.xcbkptlist
+
+cpe315_thumbsim/thumbsim
+
+cpe315_thumbsim/thumbsim.dSYM/Contents/Resources/DWARF/thumbsim
+
+cpe315_thumbsim/thumbsim
