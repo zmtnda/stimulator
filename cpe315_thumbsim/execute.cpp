@@ -228,10 +228,13 @@ void execute() {
          add_ops = decode(alu);
          switch(add_ops) {
             case ALU_LSLI:
+               rf.write(alu.instr.lsli.rd, rf[alu.instr.lsli.rm] << alu.instr.lsli.imm);
                break;
             case ALU_LSRI:
+               rf.write(alu.instr.lsri.rd, rf[alu.instr.lsri.rm] >> alu.instr.lsri.imm);
                break;
             case ALU_ASRI:
+               rf.write(alu.instr.lsri.rd, rf[alu.instr.lsri.rm] >> alu.instr.lsri.imm);                          // Need to actually be ASR, need to check implementation
                break;
             case ALU_ADDR:
                //cout << "adds r" << data.instr.addr.rd  << ", r" << data.instr.addr.rn << ", r" << data.instr.addr.rm << endl;
