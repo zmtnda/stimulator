@@ -237,7 +237,7 @@ void execute() {
                rf.write(alu.instr.lsri.rd, rf[alu.instr.lsri.rm] >> alu.instr.lsri.imm);                          // Need to actually be ASR, need to check implementation
                break;
             case ALU_ADDR:
-               //cout << "adds r" << data.instr.addr.rd  << ", r" << data.instr.addr.rn << ", r" << data.instr.addr.rm << endl;
+               cout << "!!!!!!!!adds r" << alu.instr.addr.rd  << ", r" << alu.instr.addr.rn << ", r" << rf[alu.instr.addr.rm] << endl;
                rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);     // Original
                break;
             case ALU_SUBR:
