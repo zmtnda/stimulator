@@ -8,11 +8,5 @@ run: all
 l: all
 	lldb ./thumbsim -- -i -d -f inputs/fib.sim
 
-b: all
-	./thumbsim -i -d -f inputs/byteTest.sim
-
-lb: all
-	lldb ./thumbsim -- -i -d -f inputs/byteTest.sim
-
 clean:
 	rm -rf ./*.o ./thumbsim
