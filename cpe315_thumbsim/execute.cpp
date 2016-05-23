@@ -23,7 +23,7 @@ unsigned int signExtend8to32ui(char i) {
    return static_cast<unsigned int>(static_cast<int>(i));
 }
 
-ASPR flags;
+ASPR flags = {0, 0, 0, 0};
 
 // CPE 315: You need to implement a function to set the Negative and Zero
 // flags for each instruction that does that. It only needs to take
@@ -88,6 +88,9 @@ void setCarryOverflow (int num1, int num2, OFType oftype) {
 }
 
 void setZeroNeg(int result) {
+   flags.Z = 0;
+   flags.N = 0;
+   
    if (result == 0)
       flags.Z = 1;
    else if (result < 0)
@@ -268,8 +271,10 @@ void execute() {
                cout << "\t\tFinal value: " << rf[alu.instr.mov.rdn] << "\n";
                break;
             case ALU_CMP:
+               cout << "\tComparing r" << alu.instr.cmp.rdn << " (value: " << rf[alu.instr.cmp.rdn] << ") with " << alu.instr.cmp.imm << "\n";
                setCarryOverflow(alu.instr.cmp.rdn, alu.instr.cmp.imm, OF_SUB);
-               setZeroNeg(alu.instr.cmp.rdn - alu.instr.cmp.imm);
+               setZeroNeg(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm);
+               cout << "\t\tFlags are: C: " << (int) flags.C << " O: " << (int) flags.V << " Z: " << (int) flags.Z << " N:" << (int) flags.N << " \n";
                break;
             case ALU_ADD8I:
                cout << "\tPuts r" << alu.instr.add8i.rdn << "(Value: " << rf[alu.instr.add8i.rdn]  << ") - imm (Value: " << rf[alu.instr.add8i.imm] << ") in r" << alu.instr.add8i.rdn << "\n";
