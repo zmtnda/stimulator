@@ -233,8 +233,8 @@ void execute() {
             case ALU_LSRI:
                rf.write(alu.instr.lsri.rd, rf[alu.instr.lsri.rm] >> alu.instr.lsri.imm);
                break;
-            case ALU_ASRI:
-               rf.write(alu.instr.lsri.rd, rf[alu.instr.lsri.rm] >> alu.instr.lsri.imm);                          // Need to actually be ASR, need to check implementation
+            case ALU_ASRI: // Works just fine
+               rf.write(alu.instr.lsri.rd, rf[alu.instr.lsri.rm] >> alu.instr.lsri.imm);
                break;
             case ALU_ADDR:
                cout << "!!!!!!!!adds r" << alu.instr.addr.rd  << ", r" << alu.instr.addr.rn << ", r" << rf[alu.instr.addr.rm] << endl;
