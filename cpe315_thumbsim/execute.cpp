@@ -87,6 +87,13 @@ void setCarryOverflow (int num1, int num2, OFType oftype) {
   }
 }
 
+void setZeroNeg(int result) {
+   if (result == 0)
+      flags.Z = 1;
+   else if (result < 0)
+      flags.N = 1;
+}
+
 // CPE E15: You're given the code for evaluating BEQ, and you'll need to 
 // complete the rest of these conditions. See Page 99 of the armv6 manual
 static int checkCondition(unsigned short cond) {
@@ -262,6 +269,7 @@ void execute() {
                break;
             case ALU_CMP:
                setCarryOverflow(alu.instr.cmp.rdn, alu.instr.cmp.imm, OF_SUB);
+               setZeroNeg(alu.instr.cmp.rdn - alu.instr.cmp.imm);
                break;
             case ALU_ADD8I:
                cout << "\tPuts r" << alu.instr.add8i.rdn << "(Value: " << rf[alu.instr.add8i.rdn]  << ") - imm (Value: " << rf[alu.instr.add8i.imm] << ") in r" << alu.instr.add8i.rdn << "\n";
