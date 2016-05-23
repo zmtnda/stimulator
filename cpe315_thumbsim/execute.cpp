@@ -1,6 +1,6 @@
 #include "thumbsim.hpp"
 // These are just the register NUMBERS
-#define PC_REG 15  
+#define PC_REG 15
 #define LR_REG 14
 #define SP_REG 13
 
@@ -16,11 +16,11 @@ Caches caches(0);
 // in addition to the ones given below, particularly for the unconditional
 // branch instruction, which has an 11-bit immediate field
 unsigned int signExtend16to32ui(short i) {
-  return static_cast<unsigned int>(static_cast<int>(i));
+   return static_cast<unsigned int>(static_cast<int>(i));
 }
 
 unsigned int signExtend8to32ui(char i) {
-  return static_cast<unsigned int>(static_cast<int>(i));
+   return static_cast<unsigned int>(static_cast<int>(i));
 }
 
 ASPR flags;
@@ -31,144 +31,150 @@ ASPR flags;
 
 // This function is complete, you should not have to modify it
 void setCarryOverflow (int num1, int num2, OFType oftype) {
-  switch (oftype) {
-    case OF_ADD:
-      if (((unsigned long long int)num1 + (unsigned long long int)num2) ==
-          ((unsigned int)num1 + (unsigned int)num2)) {
-        flags.C = 0;
-      }
-      else {
-        flags.C = 1;
-      }
-      if (((long long int)num1 + (long long int)num2) ==
-          ((int)num1 + (int)num2)) {
-        flags.V = 0;
-      }
-      else {
-        flags.V = 1;
-      }
-      break;
-    case OF_SUB:
-      if (num1 >= num2) {
-        flags.C = 1;
-      }
-      else if (((unsigned long long int)num1 - (unsigned long long int)num2) ==
-          ((unsigned int)num1 - (unsigned int)num2)) {
-        flags.C = 0;
-      }
-      else {
-        flags.C = 1;
-      }
-      if (((num1==0) && (num2==0)) ||
-          (((long long int)num1 - (long long int)num2) ==
-           ((int)num1 - (int)num2))) {
-        flags.V = 0;
-      }
-      else {
-        flags.V = 1;
-      }
-      break;
-    case OF_SHIFT:
-      // C flag unaffected for shifts by zero
-      if (num2 != 0) {
-        if (((unsigned long long int)num1 << (unsigned long long int)num2) ==
-            ((unsigned int)num1 << (unsigned int)num2)) {
-          flags.C = 0;
-        }
-        else {
-          flags.C = 1;
-        }
-      }
-      // Shift doesn't set overflow
-      break;
-    default:
-      cerr << "Bad OverFlow Type encountered." << __LINE__ << __FILE__ << endl;
-      exit(1);
-  }
+   switch (oftype) {
+      case OF_ADD:
+         if (((unsigned long long int)num1 + (unsigned long long int)num2) ==
+             ((unsigned int)num1 + (unsigned int)num2)) {
+            flags.C = 0;
+         }
+         else {
+            flags.C = 1;
+         }
+         if (((long long int)num1 + (long long int)num2) ==
+             ((int)num1 + (int)num2)) {
+            flags.V = 0;
+         }
+         else {
+            flags.V = 1;
+         }
+         break;
+      case OF_SUB:
+         if (num1 >= num2) {
+            flags.C = 1;
+         }
+         else if (((unsigned long long int)num1 - (unsigned long long int)num2) ==
+                  ((unsigned int)num1 - (unsigned int)num2)) {
+            flags.C = 0;
+         }
+         else {
+            flags.C = 1;
+         }
+         if (((num1==0) && (num2==0)) ||
+             (((long long int)num1 - (long long int)num2) ==
+              ((int)num1 - (int)num2))) {
+                flags.V = 0;
+             }
+         else {
+            flags.V = 1;
+         }
+         break;
+      case OF_SHIFT:
+         // C flag unaffected for shifts by zero
+         if (num2 != 0) {
+            if (((unsigned long long int)num1 << (unsigned long long int)num2) ==
+                ((unsigned int)num1 << (unsigned int)num2)) {
+               flags.C = 0;
+            }
+            else {
+               flags.C = 1;
+            }
+         }
+         // Shift doesn't set overflow
+         break;
+      default:
+         cerr << "Bad OverFlow Type encountered." << __LINE__ << __FILE__ << endl;
+         exit(1);
+   }
 }
 
-// CPE E15: You're given the code for evaluating BEQ, and you'll need to 
+void setZeroNeg(int result) {
+   if (result == 0)
+      flags.Z = 1;
+   else if (result < 0)
+      flags.N = 1;
+}
+
+// CPE E15: You're given the code for evaluating BEQ, and you'll need to
 // complete the rest of these conditions. See Page 99 of the armv6 manual
 static int checkCondition(unsigned short cond) {
-  switch(cond) {
-    case EQ:
-      if (flags.Z == 1) {
-        return TRUE;
-      }
-      break;
-    case NE:
-      if (flags.Z == 0) {
+   switch(cond) {
+      case EQ:
+         if (flags.Z == 1) {
+            return TRUE;
+         }
+         break;
+      case NE:
+         if (flags.Z == 0) {
+            return TRUE;
+         }
+         break;
+         /*carry set*/
+      case CS:
+         if (flags.C == 1)
+            return TRUE;
+         break;
+         /*carry clear*/
+      case CC:
+         if (flags.C == 0)
+            return TRUE;
+         break;
+         /*Minus, negative*/
+      case MI:
+         if (flags.N == 1)
+            return TRUE;
+         break;
+         /*plus, positive or zero*/
+      case PL:
+         if (flags.N == 0)
+            return TRUE;
+         break;
+         /*Overflow*/
+      case VS:
+         if (flags.V == 1)
+            return TRUE;
+         break;
+         /*NO overflow*/
+      case VC:
+         if (flags.V == 0)
+            return TRUE;
+         break;
+         /*unsigned higher*/
+      case HI:
+         if (flags.C == 1 && flags.Z == 0)
+            return TRUE;
+         break;
+         /*unsigned lower or same*/
+      case LS:
+         if (flags.C == 0 && flags.Z == 1)
+            return TRUE;
+         break;
+         /*signed >=*/
+      case GE:
+         if (flags.N == flags.V)
+            return TRUE;
+         break;
+         /*signed <*/
+      case LT:
+         if (flags.N !=flags.V)
+            return TRUE;
+         break;
+         /*signed >*/
+      case GT:
+         if (flags.Z == 0 && flags.N == flags.V)
+            return TRUE;
+         break;
+         /*signed <=*/
+      case LE:
+         if (flags.Z == 1 || flags.N != flags.V)
+            return TRUE;
+         break;
+      case AL:
          return TRUE;
-      }
-      break;
-   /*carry set*/
-    case CS:
-     if (flags.C == 1)
-         return TRUE;
-      break;
-    /*carry clear*/
-    case CC:
-     if (flags.C == 0)
-         return TRUE;
-      break;
-    /*Minus, negative*/
-    case MI:
-     if (flags.N == 1)
-         return TRUE;
-     break;
-    /*plus, positive or zero*/
-    case PL:
-     if (flags.N == 0)
-         return TRUE;
-      break;
-    /*Overflow*/
-    case VS:
-     if (flags.V == 1)
-         return TRUE;
-      break;
-    /*NO overflow*/
-    case VC:
-      if (flags.V == 0)
-          return TRUE;
-      break;
-    /*unsigned higher*/
-    case HI:
-     if (flags.C == 1 && flags.Z == 0)
-         return TRUE;
-      break;
-    /*unsigned lower or same*/
-    case LS:
-     if (flags.C == 0 && flags.Z == 1)
-         return TRUE;
-      break;
-    /*signed >=*/
-    case GE:
-     if (flags.N == flags.V)
-         return TRUE;
-      break;
-    /*signed <*/
-    case LT:
-     if (flags.N !=flags.V)
-         return TRUE;
-      break;
-    /*signed >*/
-    case GT:
-     if (flags.Z == 0 && flags.N == flags.V)
-         return TRUE;
-      break;
-    /*signed <=*/
-    case LE:
-     if (flags.Z == 1 || flags.N != flags.V)
-         return TRUE;
-      break;
-    case AL:
-      return TRUE;
-      break;
-  }
-  return FALSE;
+         break;
+   }
+   return FALSE;
 }
 
-/* DO I ACTUALLY NEED THIS? */
 int countBits(int toCount, int mBit) {
    int numBits = 0;
    int mask = 0x01;
@@ -237,29 +243,43 @@ void execute() {
                rf.write(alu.instr.lsri.rd, rf[alu.instr.lsri.rm] >> alu.instr.lsri.imm);
                break;
             case ALU_ADDR:
-               cout << "!!!!!!!!adds r" << alu.instr.addr.rd  << ", r" << alu.instr.addr.rn << ", r" << rf[alu.instr.addr.rm] << endl;
+               cout << "\tPuts r" << alu.instr.addr.rn << "(Value: " << rf[alu.instr.addr.rn]  << ") + r" << alu.instr.addr.rm << "(Value: " << rf[alu.instr.addr.rn] << ") in r" << alu.instr.addr.rd << "\n";
                rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);     // Original
+               cout << "\t\tFinal value: " << rf[alu.instr.addr.rd] << "\n";
                break;
             case ALU_SUBR:
+               cout << "\tPuts r" << alu.instr.addr.rn << "(Value: " << rf[alu.instr.addr.rn]  << ") - r" << alu.instr.addr.rm << "(Value: " << rf[alu.instr.addr.rn] << ") in r" << alu.instr.addr.rd << "\n";
                rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] - rf[alu.instr.subr.rm]);
+               cout << "\t\tFinal value: " << rf[alu.instr.addr.rd] << "\n";
                break;
             case ALU_ADD3I:
+               cout << "\tPuts r" << alu.instr.add3i.rn << "(Value: " << rf[alu.instr.add3i.rn]  << ") - imm (Value: " << rf[alu.instr.add3i.imm] << ") in r" << alu.instr.add3i.rd << "\n";
                rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);     // Original
+               cout << "\t\tFinal value: " << rf[alu.instr.add3i.rd] << "\n";
                break;
             case ALU_SUB3I:
+               cout << "\tPuts r" << alu.instr.sub3i.rn << "(Value: " << rf[alu.instr.sub3i.rn]  << ") - imm (Value: " << rf[alu.instr.sub3i.imm] << ") in r" << alu.instr.sub3i.rd << "\n";
                rf.write(alu.instr.sub3i.rd, rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
+               cout << "\t\tFinal value: " << rf[alu.instr.sub3i.rd] << "\n";
                break;
             case ALU_MOV:
+               cout << "\tMoving " << alu.instr.mov.imm << " into r" << alu.instr.mov.rdn << "\n";
                rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);                                  // Original
+               cout << "\t\tFinal value: " << rf[alu.instr.mov.rdn] << "\n";
                break;
             case ALU_CMP:
                setCarryOverflow(alu.instr.cmp.rdn, alu.instr.cmp.imm, OF_SUB);
+               setZeroNeg(alu.instr.cmp.rdn - alu.instr.cmp.imm);
                break;
             case ALU_ADD8I:
+               cout << "\tPuts r" << alu.instr.add8i.rdn << "(Value: " << rf[alu.instr.add8i.rdn]  << ") - imm (Value: " << rf[alu.instr.add8i.imm] << ") in r" << alu.instr.add8i.rdn << "\n";
                rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);    // Original
+               cout << "\t\tFinal value: " << rf[alu.instr.add8i.rdn] << "\n";
                break;
             case ALU_SUB8I:
+               cout << "\tPuts r" << alu.instr.sub8i.rdn << "(Value: " << rf[alu.instr.sub8i.rdn]  << ") - imm (Value: " << rf[alu.instr.sub8i.imm] << ") in r" << alu.instr.sub8i.rdn << "\n";
                rf.write(alu.instr.sub8i.rdn, rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
+               cout << "\t\tFinal value: " << rf[alu.instr.sub8i.rdn] << "\n";
                break;
             default:
                break;
@@ -304,7 +324,9 @@ void execute() {
          switch(sp_ops) {
             case SP_MOV:
                if (sp.instr.mov.d) {
+                  cout << "\tMoving r" << sp.instr.mov.rm << " into SP\n";
                   rf.write(SP_REG, rf[sp.instr.mov.rm]);
+                  cout << "\t\tSP is now " << rf[SP_REG] << "\n";
                }
                else {
                   rf.write(sp.instr.mov.rd, rf[sp.instr.mov.rm]);
@@ -331,15 +353,17 @@ void execute() {
          misc_ops = decode(misc);
          switch(misc_ops) {
             case MISC_PUSH:
+               //               cout << "\tPushing: " << rf[alu.instr.addr.rd] << "\n";
+               
                BitCount = countBits(misc.instr.push.reg_list, misc.instr.push.m);    // Don't forget to count m bit
                addr = SP - 4 * BitCount; // Number of registers
                
-//               cerr << "Made it to Push\n";                                          // Debug, remove later
+               //               cerr << "Made it to Push\n";                                          // Debug, remove later
                
                for (i = 0; i < 8; i++) {
-//                  cerr << "\tShould I push r" << i << " ?\n";                                          // Debug, remove later
+                  //                  cerr << "\tShould I push r" << i << " ?\n";                                          // Debug, remove later
                   if (misc.instr.push.reg_list & (int) pow(2, i)) {
-//                     cerr << "\t\tPushing r" << i << "\n";                                          // Debug, remove later
+                     cout << "\t\tPushing r" << i << ", value: " << rf[i] <<"\n";                                          // Debug, remove later
                      dmem.write(addr, rf[i]);
                      addr += 4;
                   }
@@ -356,13 +380,14 @@ void execute() {
                BitCount = countBits(misc.instr.pop.reg_list, misc.instr.pop.m);
                addr = SP;
                
-//               cerr << "Made it to Pop\n";                                          // Debug, remove later
+               //               cerr << "Made it to Pop\n";                                          // Debug, remove later
                
                for (i = 0; i < 8; i++) {
-//                  cerr << "\tShould I pop r" << i << " ?\n";                                          // Debug, remove later
+                  //                  cerr << "\tShould I pop r" << i << " ?\n";                                          // Debug, remove later
                   if (misc.instr.pop.reg_list & (int) pow(2, i)) {
-//                     cerr << "\t\tPopping r" << i << "\n";                                          // Debug, remove later
+                     //                     cerr << "\t\tPopping r" << i << "\n";                                          // Debug, remove later
                      rf.write(i, dmem[addr]);
+                     cout << "\tPopping r" << i << ", value: " << rf[i] <<"\n";                                          // Debug, remove later
                      addr += 4;
                   }
                }
@@ -375,10 +400,14 @@ void execute() {
                
                break;
             case MISC_SUB:
+               cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") - imm (Value: " << misc.instr.sub.imm << ") in SP\n";
                rf.write(SP_REG, SP - (misc.instr.sub.imm*4));
+               cout << "\t\tFinal value: " << rf[SP_REG] << "\n";
                break;
             case MISC_ADD:
+               cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") + imm (Value: " << misc.instr.add.imm << ") in SP\n";
                rf.write(SP_REG, SP + (misc.instr.add.imm*4));
+               cout << "\t\tFinal value: " << rf[SP_REG] << "\n";
                break;
          }
          break;
@@ -424,7 +453,9 @@ void execute() {
          break;
       case ADD_SP:
          decode(addsp);
+         cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") + imm (Value: " << misc.instr.add.imm << ") in r" << addsp.instr.add.rd << "\n";
          rf.write(addsp.instr.add.rd, SP + (addsp.instr.add.imm*4));
+         cout << "\t\tFinal value: " << rf[addsp.instr.add.rd] << "\n";
          break;
       default:
          cout << "[ERROR] Unknown Instruction to be executed" << endl;
