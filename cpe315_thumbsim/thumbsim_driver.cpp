@@ -99,6 +99,18 @@ void Memory<Data32, Data32>::dump(DataType dt) const {
   }
 }
 
+int makeMask(int numBits) {
+   int ndx;
+   int mask = 0;
+   
+   for (ndx = 0; ndx < numBits && ndx < 32; ndx++) {
+      mask++;
+      mask <<= 1;
+   }
+   
+   return mask;
+}
+
 // CPE 315: You must implement and call this function for each 
 // memory address (dmem only) accessed by the program. It should return 
 // true for a cache hit and false for a cache miss, and on a cache miss, 
@@ -109,7 +121,15 @@ void Memory<Data32, Data32>::dump(DataType dt) const {
 // cache size in blocks). You should also update the "hits" and
 // "misses" counters.
 bool Cache::access(unsigned int address) {
-  return false;
+                                                                                    // Implent this
+   static int tagSize = 32 - (int) pow(size, 0.5);
+   static int tagMask = makeMask(tagSize);
+   
+   cout << "For a " << size << "byte cache, the tag size is " << tagSize <<\
+         " and the tag mask is " << tagMask;
+   
+   
+   return false;
 }
 
 void Stats::print() {
