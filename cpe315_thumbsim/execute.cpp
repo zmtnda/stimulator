@@ -397,11 +397,12 @@ void execute() {
                   }
                }
                
+               rf.write(SP_REG, SP + 4 * BitCount);
+               
                if (misc.instr.pop.m & 0x1) {
                   rf.write(PC_REG, dmem[addr]);
                }
-               
-               rf.write(SP_REG, SP - 4 * BitCount);
+
                
                break;
             case MISC_SUB:
