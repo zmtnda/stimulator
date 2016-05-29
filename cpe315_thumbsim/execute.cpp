@@ -349,8 +349,25 @@ void execute() {
                dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
                break;
             case LDRI:
+               // Permitted values are multiples of 4 page 139
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
                rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
+               break;
+            case STRBR:
+               //calculate the address
+               addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
+               //store the word in target register
+               dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
+               //read a byte only 
+               temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
+               break;
+            case LDRBR:
+               //calculate the address
+               addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
+               //write the word to register
+               rf.write(ld_st.instr.ld_st_reg.rt, dmem[addr]);
+               //read a byte only 
+               temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
                break;
          }
          break;
