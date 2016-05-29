@@ -345,7 +345,7 @@ void execute() {
          ldst_ops = decode(ld_st);
          switch(ldst_ops) {
             case STRI:
-               addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
+         addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
                dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
                break;
             case LDRI:
@@ -393,7 +393,7 @@ void execute() {
                //cerr << "Made it to Push\n";
                //// Debug, remove later
                
-               for (i = 0; i < 14; i++) {
+               for (i = 0; i < 15; i++) {
                   //                  cerr << "\tShould I push r" << i << " ?\n";                                          // Debug, remove later
                   if (misc.instr.push.reg_list & (int) pow(2, i)) {
                      cout << "\t\tPushing r" << i << ", value: " << rf[i] <<"\n";                                          // Debug, remove later
@@ -414,8 +414,7 @@ void execute() {
                addr = SP;
                
                //               cerr << "Made it to Pop\n";                                          // Debug, remove later
-               
-               for (i = 0; i < 14; i++) {
+               for (i = 0; i < 15; i++) {
                   //                  cerr << "\tShould I pop r" << i << " ?\n";                                          // Debug, remove later
                   if (misc.instr.pop.reg_list & (int) pow(2, i)) {
                      //                     cerr << "\t\tPopping r" << i << "\n";                                          // Debug, remove later
@@ -460,9 +459,34 @@ void execute() {
          break;
       case LDM:
          decode(ldm);
+         //BASE REGISTER
+         addr = rf[ldm.instr.ldm.rn];
+         //not sure of second argument
+         BitCount = countBits(ldm.instr.ldm.reg_list, 1); 
+         for(i = 0; i < 8; i++){
+            if(ldm.instr.ldm.reg_list & (int) pow(2, i)){
+               rf.write(i, dmem[addr]);
+               cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
+               addr += 4;
+            }
+         }
+         if(!ldm.instr.ldm.rn){
+            rf.write(ldm.instr.ldm.rn, rf[ldm.instr.ldm.rn] + 4 * BitCount);
+         }
          break;
       case STM:
          decode(stm);
+         //BASE REGISTER
+         addr = rf[stm.instr.stm.rn];
+         //not sure of the second argument 
+         BitCount = countBits(stm.instr.stm.reg_list, 1); 
+         for(i = 0; i < 15; i++){
+            if(stm.instr.stm.reg_list & (int) pow(2, i)){
+               dmem.write(addr, rf[i]);
+               cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
+               addr += 4;
+            }
+         }
          break;
       case LDRL:
          // This instruction is complete, nothing needed
