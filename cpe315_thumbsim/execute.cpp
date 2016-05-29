@@ -353,6 +353,17 @@ void execute() {
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
                rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
                break;
+            case STRBI:
+               // dont need the address to be multiple of 4
+               addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
+               dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt);
+               temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
+               break
+            case LDRBI:
+               addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
+               rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
+               temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
+               break;
             case STRBR:
                //calculate the address
                addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
