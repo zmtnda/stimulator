@@ -356,9 +356,9 @@ void execute() {
             case STRBI:
                // dont need the address to be multiple of 4
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
-               dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt);
+               dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
                temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
-               break
+               break;
             case LDRBI:
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
                rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
@@ -386,14 +386,14 @@ void execute() {
          misc_ops = decode(misc);
          switch(misc_ops) {
             case MISC_PUSH:
-               //               cout << "\tPushing: " << rf[alu.instr.addr.rd] << "\n";
-               
-               BitCount = countBits(misc.instr.push.reg_list, misc.instr.push.m);    // Don't forget to count m bit
+               //cout << "\tPushing: " << rf[alu.instr.addr.rd] << "\n";
+               BitCount = countBits(misc.instr.push.reg_list, misc.instr.push.m);
+               // Don't forget to count m bit
                addr = SP - 4 * BitCount; // Number of registers
+               //cerr << "Made it to Push\n";
+               //// Debug, remove later
                
-               //               cerr << "Made it to Push\n";                                          // Debug, remove later
-               
-               for (i = 0; i < 8; i++) {
+               for (i = 0; i < 14; i++) {
                   //                  cerr << "\tShould I push r" << i << " ?\n";                                          // Debug, remove later
                   if (misc.instr.push.reg_list & (int) pow(2, i)) {
                      cout << "\t\tPushing r" << i << ", value: " << rf[i] <<"\n";                                          // Debug, remove later
@@ -415,7 +415,7 @@ void execute() {
                
                //               cerr << "Made it to Pop\n";                                          // Debug, remove later
                
-               for (i = 0; i < 8; i++) {
+               for (i = 0; i < 14; i++) {
                   //                  cerr << "\tShould I pop r" << i << " ?\n";                                          // Debug, remove later
                   if (misc.instr.pop.reg_list & (int) pow(2, i)) {
                      //                     cerr << "\t\tPopping r" << i << "\n";                                          // Debug, remove later
