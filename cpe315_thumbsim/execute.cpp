@@ -347,21 +347,25 @@ void execute() {
             case STRI:
          addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
                dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
+               caches.access(addr);
                break;
             case LDRI:
                // Permitted values are multiples of 4 page 139
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
                rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
+               caches.access(addr);
                break;
             case STRBI:
                // dont need the address to be multiple of 4
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
                dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
+               caches.access(addr);
                temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
                break;
             case LDRBI:
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
                rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
+               caches.access(addr);
                temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
                break;
             case STRBR:
@@ -369,7 +373,8 @@ void execute() {
                addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
                //store the word in target register
                dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
-               //read a byte only 
+               caches.access(addr);
+               //read a byte only
                temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
                break;
             case LDRBR:
@@ -377,7 +382,8 @@ void execute() {
                addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
                //write the word to register
                rf.write(ld_st.instr.ld_st_reg.rt, dmem[addr]);
-               //read a byte only 
+               caches.access(addr);
+               //read a byte only
                temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
                break;
          }
@@ -396,14 +402,16 @@ void execute() {
                for (i = 0; i < 15; i++) {
                   //                  cerr << "\tShould I push r" << i << " ?\n";                                          // Debug, remove later
                   if (misc.instr.push.reg_list & (int) pow(2, i)) {
-                     cout << "\t\tPushing r" << i << ", value: " << rf[i] <<"\n";                                          // Debug, remove later
+                     cout << "\t\tPushing r" << i << ", value: " << rf[i] <<"\n";                                         // Debug, remove later
                      dmem.write(addr, rf[i]);
+                     caches.access(addr);
                      addr += 4;
                   }
                }
                
                if (misc.instr.push.m & 0x1) {
                   dmem.write(addr, LR);
+                  caches.access(addr);
                }
                
                rf.write(SP_REG, SP - 4 * BitCount);
@@ -419,6 +427,7 @@ void execute() {
                   if (misc.instr.pop.reg_list & (int) pow(2, i)) {
                      //                     cerr << "\t\tPopping r" << i << "\n";                                          // Debug, remove later
                      rf.write(i, dmem[addr]);
+                     caches.access(addr);
                      cout << "\tPopping r" << i << ", value: " << rf[i] <<"\n";                                          // Debug, remove later
                      addr += 4;
                   }
@@ -428,6 +437,7 @@ void execute() {
                
                if (misc.instr.pop.m & 0x1) {
                   rf.write(PC_REG, dmem[addr]);
+                  caches.access(addr);
                }
 
                
@@ -466,6 +476,7 @@ void execute() {
          for(i = 0; i < 8; i++){
             if(ldm.instr.ldm.reg_list & (int) pow(2, i)){
                rf.write(i, dmem[addr]);
+               caches.access(addr);
                cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
                addr += 4;
             }
@@ -483,6 +494,7 @@ void execute() {
          for(i = 0; i < 15; i++){
             if(stm.instr.stm.reg_list & (int) pow(2, i)){
                dmem.write(addr, rf[i]);
+               caches.access(addr);
                cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
                addr += 4;
             }
