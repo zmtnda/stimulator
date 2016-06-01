@@ -100,15 +100,7 @@ void Memory<Data32, Data32>::dump(DataType dt) const {
 }
 
 int makeMask(int numBits) {
-   int ndx;
-   int mask = 0;
-   
-   for (ndx = 0; ndx < numBits && ndx < 32; ndx++) {
-      mask++;
-      mask <<= 1;
-   }
-   
-   return mask;
+   return (1 << numBits) - 1;
 }
 
 int getTag(int address, int tagSize) {
