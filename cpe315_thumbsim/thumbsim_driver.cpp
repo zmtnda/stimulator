@@ -111,6 +111,18 @@ int makeMask(int numBits) {
    return mask;
 }
 
+int getTag(int address, int tagSize) {
+   int shift = 32 - tagSize;
+   
+   return (address >> shift) & makeMask(tagSize);
+}
+
+int getIndex(int address, int size, int blockSize) {
+   int shift = log2(blockSize);  // Shift past the byte index
+   
+   return (address >> shift) & makeMask(size);
+}
+
 // CPE 315: You must implement and call this function for each 
 // memory address (dmem only) accessed by the program. It should return 
 // true for a cache hit and false for a cache miss, and on a cache miss, 
@@ -122,14 +134,26 @@ int makeMask(int numBits) {
 // "misses" counters.
 bool Cache::access(unsigned int address) {
                                                                                     // Implent this
-   static int tagSize = 32 - (int) pow(size, 0.5);
+   static int tagSize = 32 - (int) log2(size * blocksize);
    static int tagMask = makeMask(tagSize);
    
-   cout << "For a " << size << "byte cache, the tag size is " << tagSize <<\
+   int index = getIndex(address, size, blocksize);
+   int tag = getTag(address, tagSize);
+   bool hitBool = false;
+   
+   cout << "For a " << size << "block cache, the tag size is " << tagSize <<\
          " and the tag mask is " << tagMask;
    
-   
-   return false;
+   if (entries[index] == tag) {
+      hits++;
+      hitBool = true;
+   }
+   else {
+      misses++;
+      entries[index] = tag;
+   }
+
+   return hitBool;
 }
 
 void Stats::print() {
