@@ -226,8 +226,11 @@ void execute() {
    MISC_Ops misc_ops;
    
    rf.write(PC_REG, pctarget);
+   stats.numRegWrites++;
    
    itype = decode(ALL_Types(instr));
+   
+   stats.instrs++;
    
    // CPE 315: The bulk of your work is in the following switch statement
    // All instructions will need to have stats and cache access info added
@@ -238,52 +241,72 @@ void execute() {
          switch(add_ops) {
             case ALU_LSLI:
                rf.write(alu.instr.lsli.rd, rf[alu.instr.lsli.rm] << alu.instr.lsli.imm);
+               stats.numRegWrites++;
+               stats.numRegReads++;
                break;
             case ALU_LSRI:
                rf.write(alu.instr.lsri.rd, rf[alu.instr.lsri.rm] >> alu.instr.lsri.imm);
+               stats.numRegWrites++;
+               stats.numRegReads++;
                break;
             case ALU_ASRI: // Works just fine
                rf.write(alu.instr.lsri.rd, rf[alu.instr.lsri.rm] >> alu.instr.lsri.imm);
+               stats.numRegWrites++;
+               stats.numRegReads++;
                break;
             case ALU_ADDR:
                cout << "\tPuts r" << alu.instr.addr.rn << "(Value: " << rf[alu.instr.addr.rn]  << ") + r" << alu.instr.addr.rm << "(Value: " << rf[alu.instr.addr.rn] << ") in r" << alu.instr.addr.rd << "\n";
                rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);     // Original
+               stats.numRegWrites++;
+               stats.numRegReads += 2;
                cout << "\t\tFinal value: " << rf[alu.instr.addr.rd] << "\n";
                break;
             case ALU_SUBR:
                cout << "\tPuts r" << alu.instr.addr.rn << "(Value: " << rf[alu.instr.addr.rn]  << ") - r" << alu.instr.addr.rm << "(Value: " << rf[alu.instr.addr.rn] << ") in r" << alu.instr.addr.rd << "\n";
                rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] - rf[alu.instr.subr.rm]);
+               stats.numRegWrites++;
+               stats.numRegReads += 2;
                cout << "\t\tFinal value: " << rf[alu.instr.addr.rd] << "\n";
                break;
             case ALU_ADD3I:
                cout << "\tPuts r" << alu.instr.add3i.rn << "(Value: " << rf[alu.instr.add3i.rn]  << ") - imm (Value: " << rf[alu.instr.add3i.imm] << ") in r" << alu.instr.add3i.rd << "\n";
                rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);     // Original
+               stats.numRegWrites++;
+               stats.numRegReads++;
                cout << "\t\tFinal value: " << rf[alu.instr.add3i.rd] << "\n";
                break;
             case ALU_SUB3I:
                cout << "\tPuts r" << alu.instr.sub3i.rn << "(Value: " << rf[alu.instr.sub3i.rn]  << ") - imm (Value: " << rf[alu.instr.sub3i.imm] << ") in r" << alu.instr.sub3i.rd << "\n";
                rf.write(alu.instr.sub3i.rd, rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
+               stats.numRegWrites++;
+               stats.numRegReads++;
                cout << "\t\tFinal value: " << rf[alu.instr.sub3i.rd] << "\n";
                break;
             case ALU_MOV:
                cout << "\tMoving " << alu.instr.mov.imm << " into r" << alu.instr.mov.rdn << "\n";
                rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);                                  // Original
+               stats.numRegWrites++;
                cout << "\t\tFinal value: " << rf[alu.instr.mov.rdn] << "\n";
                break;
             case ALU_CMP:
                cout << "\tComparing r" << alu.instr.cmp.rdn << " (value: " << rf[alu.instr.cmp.rdn] << ") with " << alu.instr.cmp.imm << "\n";
                setCarryOverflow(alu.instr.cmp.rdn, alu.instr.cmp.imm, OF_SUB);
                setZeroNeg(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm);
+               stats.numRegReads++;
                cout << "\t\tFlags are: C: " << (int) flags.C << " O: " << (int) flags.V << " Z: " << (int) flags.Z << " N:" << (int) flags.N << " \n";
                break;
             case ALU_ADD8I:
                cout << "\tPuts r" << alu.instr.add8i.rdn << "(Value: " << rf[alu.instr.add8i.rdn]  << ") - imm (Value: " << rf[alu.instr.add8i.imm] << ") in r" << alu.instr.add8i.rdn << "\n";
                rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);    // Original
+               stats.numRegWrites++;
+               stats.numRegReads++;
                cout << "\t\tFinal value: " << rf[alu.instr.add8i.rdn] << "\n";
                break;
             case ALU_SUB8I:
                cout << "\tPuts r" << alu.instr.sub8i.rdn << "(Value: " << rf[alu.instr.sub8i.rdn]  << ") - imm (Value: " << rf[alu.instr.sub8i.imm] << ") in r" << alu.instr.sub8i.rdn << "\n";
                rf.write(alu.instr.sub8i.rdn, rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
+               stats.numRegWrites++;
+               stats.numRegReads++;
                cout << "\t\tFinal value: " << rf[alu.instr.sub8i.rdn] << "\n";
                break;
             default:
@@ -331,10 +354,14 @@ void execute() {
                if (sp.instr.mov.d) {
                   cout << "\tMoving r" << sp.instr.mov.rm << " into SP\n";
                   rf.write(SP_REG, rf[sp.instr.mov.rm]);
+                  stats.numRegWrites++;
+                  stats.numRegReads++;
                   cout << "\t\tSP is now " << rf[SP_REG] << "\n";
                }
                else {
                   rf.write(sp.instr.mov.rd, rf[sp.instr.mov.rm]);
+                  stats.numRegWrites++;
+                  stats.numRegReads++;
                }
                break;
          }
@@ -348,11 +375,14 @@ void execute() {
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
                dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
                caches.access(addr);
+               stats.numRegReads++;
                break;
             case LDRI:
                // Permitted values are multiples of 4 page 139
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
                rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
+               stats.numRegWrites++;
+               stats.numRegReads++;
                caches.access(addr);
                break;
             case STRBI:
@@ -361,11 +391,14 @@ void execute() {
                temp = dmem[addr];
                temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
                dmem.write(addr, temp);
+               stats.numRegReads++;
                caches.access(addr);
                break;
             case LDRBI:
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
                rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
+               stats.numRegWrites++;
+               stats.numRegReads++;
                caches.access(addr);
                temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
                break;
@@ -375,6 +408,7 @@ void execute() {
                //store the word in target register
                dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
                caches.access(addr);
+               stats.numRegReads++;
                //read a byte only
                temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
                break;
@@ -383,6 +417,8 @@ void execute() {
                addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
                //write the word to register
                rf.write(ld_st.instr.ld_st_reg.rt, dmem[addr]);
+               stats.numRegWrites++;
+               stats.numRegReads += 2;
                caches.access(addr);
                //read a byte only
                temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
@@ -400,12 +436,13 @@ void execute() {
                //cerr << "Made it to Push\n";
                //// Debug, remove later
                
-               for (i = 0; i < 15; i++) {
+               for (i = 0; i < 8; i++) {
                   //                  cerr << "\tShould I push r" << i << " ?\n";                                          // Debug, remove later
                   if (misc.instr.push.reg_list & (int) pow(2, i)) {
                      cout << "\t\tPushing r" << i << ", value: " << rf[i] <<"\n";                                         // Debug, remove later
                      dmem.write(addr, rf[i]);
                      caches.access(addr);
+                     stats.numRegReads++;
                      addr += 4;
                   }
                }
@@ -416,6 +453,7 @@ void execute() {
                }
                
                rf.write(SP_REG, SP - 4 * BitCount);
+               stats.numRegWrites++;
                
                break;
             case MISC_POP:
@@ -423,11 +461,12 @@ void execute() {
                addr = SP;
                
                //               cerr << "Made it to Pop\n";                                          // Debug, remove later
-               for (i = 0; i < 15; i++) {
+               for (i = 0; i < 8; i++) {
                   //                  cerr << "\tShould I pop r" << i << " ?\n";                                          // Debug, remove later
-                  if (misc.instr.pop.reg_list & (int) pow(2, i)) {
+                  if (misc.instr.pop.reg_list & (1 << i)) {
                      //                     cerr << "\t\tPopping r" << i << "\n";                                          // Debug, remove later
                      rf.write(i, dmem[addr]);
+                     stats.numRegWrites++;
                      caches.access(addr);
                      cout << "\tPopping r" << i << ", value: " << rf[i] <<"\n";                                          // Debug, remove later
                      addr += 4;
@@ -435,9 +474,11 @@ void execute() {
                }
                
                rf.write(SP_REG, SP + 4 * BitCount);
+               stats.numRegWrites++;
                
                if (misc.instr.pop.m & 0x1) {
                   rf.write(PC_REG, dmem[addr]);
+                  stats.numRegWrites++;
                   caches.access(addr);
                }
 
@@ -446,11 +487,13 @@ void execute() {
             case MISC_SUB:
                cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") - imm (Value: " << misc.instr.sub.imm << ") in SP\n";
                rf.write(SP_REG, SP - (misc.instr.sub.imm*4));
+               stats.numRegWrites++;
                cout << "\t\tFinal value: " << rf[SP_REG] << "\n";
                break;
             case MISC_ADD:
                cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") + imm (Value: " << misc.instr.add.imm << ") in SP\n";
                rf.write(SP_REG, SP + (misc.instr.add.imm*4));
+               stats.numRegWrites++;
                cout << "\t\tFinal value: " << rf[SP_REG] << "\n";
                break;
          }
@@ -461,6 +504,7 @@ void execute() {
          // this should work for all your conditional branches.
          if (checkCondition(cond.instr.b.cond)){
             rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
+            stats.numRegWrites++;
          }
          break;
       case UNCOND:
@@ -472,34 +516,41 @@ void execute() {
          decode(ldm);
          //BASE REGISTER
          addr = rf[ldm.instr.ldm.rn];
-         //not sure of second argument
-         BitCount = countBits(ldm.instr.ldm.reg_list, 1); 
+         stats.numRegReads++;
+         BitCount = countBits(ldm.instr.ldm.reg_list, 0);
          for(i = 0; i < 8; i++){
-            if(ldm.instr.ldm.reg_list & (int) pow(2, i)){
+            if(ldm.instr.ldm.reg_list & (1 << i)){
                rf.write(i, dmem[addr]);
+               stats.numRegWrites++;
                caches.access(addr);
                cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
                addr += 4;
             }
          }
-         if(!ldm.instr.ldm.rn){
+         if((ldm.instr.ldm.reg_list & (1 << ldm.instr.ldm.rn)) == 0){
             rf.write(ldm.instr.ldm.rn, rf[ldm.instr.ldm.rn] + 4 * BitCount);
+            stats.numRegWrites++;
+            stats.numRegReads++;
          }
          break;
       case STM:
          decode(stm);
          //BASE REGISTER
          addr = rf[stm.instr.stm.rn];
-         //not sure of the second argument 
-         BitCount = countBits(stm.instr.stm.reg_list, 1); 
-         for(i = 0; i < 15; i++){
-            if(stm.instr.stm.reg_list & (int) pow(2, i)){
+         stats.numRegReads++;
+         BitCount = countBits(stm.instr.stm.reg_list, 0);
+         for(i = 0; i < 8; i++){
+            if(stm.instr.stm.reg_list & (1 << i)){
                dmem.write(addr, rf[i]);
+               stats.numRegReads++;
                caches.access(addr);
                cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
                addr += 4;
             }
          }
+         rf.write(stm.instr.stm.rn, rf[stm.instr.stm.rn] + 4 * BitCount);
+         stats.numRegWrites++;
+         stats.numRegReads++;
          break;
       case LDRL:
          // This instruction is complete, nothing needed
@@ -514,6 +565,7 @@ void execute() {
          // Requires two consecutive imem locations pieced together
          temp = imem[addr] | (imem[addr+2]<<16);  // temp is a Data32
          rf.write(ldrl.instr.ldrl.rt, temp);
+         stats.numRegWrites++;
          
          // One write for updated reg
          stats.numRegWrites++;
@@ -526,6 +578,7 @@ void execute() {
          decode(addsp);
          cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") + imm (Value: " << misc.instr.add.imm << ") in r" << addsp.instr.add.rd << "\n";
          rf.write(addsp.instr.add.rd, SP + (addsp.instr.add.imm*4));
+         stats.numRegWrites++;
          cout << "\t\tFinal value: " << rf[addsp.instr.add.rd] << "\n";
          break;
       default:
