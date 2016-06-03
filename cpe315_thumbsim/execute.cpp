@@ -261,11 +261,11 @@ void execute() {
                stats.numRegReads++;
                break;
             case ALU_ADDR:
-               cout << "\tPuts r" << alu.instr.addr.rn << "(Value: " << rf[alu.instr.addr.rn]  << ") + r" << alu.instr.addr.rm << "(Value: " << rf[alu.instr.addr.rn] << ") in r" << alu.instr.addr.rd << "\n";
+               //cout << "\tPuts r" << alu.instr.addr.rn << "(Value: " << rf[alu.instr.addr.rn]  << ") + r" << alu.instr.addr.rm << "(Value: " << rf[alu.instr.addr.rn] << ") in r" << alu.instr.addr.rd << "\n";
                rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);     // Original
                stats.numRegWrites++;
                stats.numRegReads += 2;
-               cout << "\t\tFinal value: " << rf[alu.instr.addr.rd] << "\n";
+               //cout << "\t\tFinal value: " << rf[alu.instr.addr.rd] << "\n";
                setCarryOverflow(rf[alu.instr.addr.rn],rf[alu.instr.addr.rm], OF_ADD);
                setZeroNeg(rf[alu.instr.addr.rd]);
                break;
@@ -541,14 +541,29 @@ void execute() {
          // Once you've completed the checkCondition function,
          // this should work for all your conditional branches.
          if (checkCondition(cond.instr.b.cond)){
+            if (cond.instr.b.imm < 0)
+               stats.numForwardBranchesTaken++;
+            else
+               stats.numBackwardBranchesTaken++;
             rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
             stats.numRegWrites++;
+         }
+         else {
+            if (cond.instr.b.imm < 0)
+               stats.numForwardBranchesNotTaken++;
+            else
+               stats.numBackwardBranchesNotTaken++;
          }
          break;
       case UNCOND:
          // Essentially the same as the conditional branches, but with no
          // condition check, and a different sized immediate field
          decode(uncond);
+         rf.write(PC_REG, PC + 2 * signExtend8to32ui(uncond.instr.b.imm) + 2);
+         if (uncond.instr.b.imm < 0)
+            stats.numForwardBranchesTaken++;
+         else
+            stats.numBackwardBranchesTaken++;
          break;
       case LDM:
          decode(ldm);
