@@ -235,61 +235,7 @@ void execute() {
    switch(itype) {
       case ALU:
          add_ops = decode(alu);
-         switch(add_ops) {
-            case ALU_LSLI:
-               rf.write(alu.instr.lsli.rd, rf[alu.instr.lsli.rm] << alu.instr.lsli.imm);
-               break;
-            case ALU_LSRI:
-               rf.write(alu.instr.lsri.rd, rf[alu.instr.lsri.rm] >> alu.instr.lsri.imm);
-               break;
-            case ALU_ASRI: // Works just fine
-               rf.write(alu.instr.lsri.rd, rf[alu.instr.lsri.rm] >> alu.instr.lsri.imm);
-               break;
-            case ALU_ADDR:
-               cout << "\tPuts r" << alu.instr.addr.rn << "(Value: " << rf[alu.instr.addr.rn]  << ") + r" << alu.instr.addr.rm << "(Value: " << rf[alu.instr.addr.rn] << ") in r" << alu.instr.addr.rd << "\n";
-               rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);     // Original
-               cout << "\t\tFinal value: " << rf[alu.instr.addr.rd] << "\n";
-               break;
-            case ALU_SUBR:
-               cout << "\tPuts r" << alu.instr.addr.rn << "(Value: " << rf[alu.instr.addr.rn]  << ") - r" << alu.instr.addr.rm << "(Value: " << rf[alu.instr.addr.rn] << ") in r" << alu.instr.addr.rd << "\n";
-               rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] - rf[alu.instr.subr.rm]);
-               cout << "\t\tFinal value: " << rf[alu.instr.addr.rd] << "\n";
-               break;
-            case ALU_ADD3I:
-               cout << "\tPuts r" << alu.instr.add3i.rn << "(Value: " << rf[alu.instr.add3i.rn]  << ") - imm (Value: " << rf[alu.instr.add3i.imm] << ") in r" << alu.instr.add3i.rd << "\n";
-               rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);     // Original
-               cout << "\t\tFinal value: " << rf[alu.instr.add3i.rd] << "\n";
-               break;
-            case ALU_SUB3I:
-               cout << "\tPuts r" << alu.instr.sub3i.rn << "(Value: " << rf[alu.instr.sub3i.rn]  << ") - imm (Value: " << rf[alu.instr.sub3i.imm] << ") in r" << alu.instr.sub3i.rd << "\n";
-               rf.write(alu.instr.sub3i.rd, rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
-               cout << "\t\tFinal value: " << rf[alu.instr.sub3i.rd] << "\n";
-               break;
-            case ALU_MOV:
-               cout << "\tMoving " << alu.instr.mov.imm << " into r" << alu.instr.mov.rdn << "\n";
-               rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);                                  // Original
-               cout << "\t\tFinal value: " << rf[alu.instr.mov.rdn] << "\n";
-               break;
-            case ALU_CMP:
-               cout << "\tComparing r" << alu.instr.cmp.rdn << " (value: " << rf[alu.instr.cmp.rdn] << ") with " << alu.instr.cmp.imm << "\n";
-               setCarryOverflow(alu.instr.cmp.rdn, alu.instr.cmp.imm, OF_SUB);
-               setZeroNeg(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm);
-               cout << "\t\tFlags are: C: " << (int) flags.C << " O: " << (int) flags.V << " Z: " << (int) flags.Z << " N:" << (int) flags.N << " \n";
-               break;
-            case ALU_ADD8I:
-               cout << "\tPuts r" << alu.instr.add8i.rdn << "(Value: " << rf[alu.instr.add8i.rdn]  << ") - imm (Value: " << rf[alu.instr.add8i.imm] << ") in r" << alu.instr.add8i.rdn << "\n";
-               rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);    // Original
-               cout << "\t\tFinal value: " << rf[alu.instr.add8i.rdn] << "\n";
-               break;
-            case ALU_SUB8I:
-               cout << "\tPuts r" << alu.instr.sub8i.rdn << "(Value: " << rf[alu.instr.sub8i.rdn]  << ") - imm (Value: " << rf[alu.instr.sub8i.imm] << ") in r" << alu.instr.sub8i.rdn << "\n";
-               rf.write(alu.instr.sub8i.rdn, rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
-               cout << "\t\tFinal value: " << rf[alu.instr.sub8i.rdn] << "\n";
-               break;
-            default:
-               break;
-         }
-         break;
+      
       case BL:
          // This instruction is complete, nothing needed here
          bl_ops = decode(blupper);
@@ -329,9 +275,9 @@ void execute() {
          switch(sp_ops) {
             case SP_MOV:
                if (sp.instr.mov.d) {
-                  cout << "\tMoving r" << sp.instr.mov.rm << " into SP\n";
+                  //cout << "\tMoving r" << sp.instr.mov.rm << " into SP\n";
                   rf.write(SP_REG, rf[sp.instr.mov.rm]);
-                  cout << "\t\tSP is now " << rf[SP_REG] << "\n";
+                  //cout << "\t\tSP is now " << rf[SP_REG] << "\n";
                }
                else {
                   rf.write(sp.instr.mov.rd, rf[sp.instr.mov.rm]);
@@ -421,7 +367,7 @@ void execute() {
                for (i = 0; i < 15; i++) {
                   //                  cerr << "\tShould I push r" << i << " ?\n";                                          // Debug, remove later
                   if (misc.instr.push.reg_list & (int) pow(2, i)) {
-                     cout << "\t\tPushing r" << i << ", value: " << rf[i] <<"\n";                                         // Debug, remove later
+                     //cout << "\t\tPushing r" << i << ", value: " << rf[i] <<"\n";                                         // Debug, remove later
                      dmem.write(addr, rf[i]);
                      caches.access(addr);
                      addr += 4;
@@ -446,7 +392,7 @@ void execute() {
                      //                     cerr << "\t\tPopping r" << i << "\n";                                          // Debug, remove later
                      rf.write(i, dmem[addr]);
                      caches.access(addr);
-                     cout << "\tPopping r" << i << ", value: " << rf[i] <<"\n";                                          // Debug, remove later
+                     //cout << "\tPopping r" << i << ", value: " << rf[i] <<"\n";                                          // Debug, remove later
                      addr += 4;
                   }
                }
@@ -461,14 +407,15 @@ void execute() {
                
                break;
             case MISC_SUB:
-               cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") - imm (Value: " << misc.instr.sub.imm << ") in SP\n";
+               //cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") - imm (Value: " << misc.instr.sub.imm << ") in SP\n";
                rf.write(SP_REG, SP - (misc.instr.sub.imm*4));
-               cout << "\t\tFinal value: " << rf[SP_REG] << "\n";
+               //cout << "\t\tFinal value: " << rf[SP_REG] << "\n";
                break;
             case MISC_ADD:
-               cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") + imm (Value: " << misc.instr.add.imm << ") in SP\n";
+               //cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") + imm (Value: " << misc.instr.add.imm << ") in SP\n";
                rf.write(SP_REG, SP + (misc.instr.add.imm*4));
-               cout << "\t\tFinal value: " << rf[SP_REG] << "\n";
+               //cout << "\t\tFinal value: " << rf[SP_REG] << "\n";
+
                break;
          }
          break;
@@ -495,7 +442,7 @@ void execute() {
             if(ldm.instr.ldm.reg_list & (int) pow(2, i)){
                rf.write(i, dmem[addr]);
                caches.access(addr);
-               cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
+               //cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
                addr += 4;
             }
          }
@@ -513,7 +460,7 @@ void execute() {
             if(stm.instr.stm.reg_list & (int) pow(2, i)){
                dmem.write(addr, rf[i]);
                caches.access(addr);
-               cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
+               //cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
                addr += 4;
             }
          }
@@ -541,12 +488,12 @@ void execute() {
          break;
       case ADD_SP:
          decode(addsp);
-         cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") + imm (Value: " << misc.instr.add.imm << ") in r" << addsp.instr.add.rd << "\n";
+         //cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") + imm (Value: " << misc.instr.add.imm << ") in r" << addsp.instr.add.rd << "\n";
          rf.write(addsp.instr.add.rd, SP + (addsp.instr.add.imm*4));
-         cout << "\t\tFinal value: " << rf[addsp.instr.add.rd] << "\n";
+         //cout << "\t\tFinal value: " << rf[addsp.instr.add.rd] << "\n";
          break;
       default:
-         cout << "[ERROR] Unknown Instruction to be executed" << endl;
+         //cout << "[ERROR] Unknown Instruction to be executed" << endl;
          exit(1);
          break;
    }
