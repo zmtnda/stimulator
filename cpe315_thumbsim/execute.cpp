@@ -236,11 +236,17 @@ void execute() {
       case ALU:
          add_ops = decode(alu);
          switch(add_ops) {
+				//page150
             case ALU_LSLI:
                rf.write(alu.instr.lsli.rd, rf[alu.instr.lsli.rm] << alu.instr.lsli.imm);
+					setCarryOverflow(rf[alu.instr.lsli.rm] ,alu.instr.lsli.imm, OF_SHIFT);
+					setZeroNeg(rf[alu.instr.lsli.rd]);
                break;
+				//page 152
             case ALU_LSRI:
                rf.write(alu.instr.lsri.rd, rf[alu.instr.lsri.rm] >> alu.instr.lsri.imm);
+					setCarryOverflow(rf[alu.instr.lsri.rm],alu.instr.lsri.imm, OF_SHIFT);
+					setZeroNeg(rf[alu.instr.lsri.rd]);
                break;
             case ALU_ASRI: // Works just fine
                rf.write(alu.instr.lsri.rd, rf[alu.instr.lsri.rm] >> alu.instr.lsri.imm);
@@ -249,21 +255,29 @@ void execute() {
                cout << "\tPuts r" << alu.instr.addr.rn << "(Value: " << rf[alu.instr.addr.rn]  << ") + r" << alu.instr.addr.rm << "(Value: " << rf[alu.instr.addr.rn] << ") in r" << alu.instr.addr.rd << "\n";
                rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);     // Original
                cout << "\t\tFinal value: " << rf[alu.instr.addr.rd] << "\n";
+					setCarryOverflow(rf[alu.instr.addr.rn],rf[alu.instr.addr.rm], OF_ADD);
+					setZeroNeg(rf[alu.instr.addr.rd]);
                break;
             case ALU_SUBR:
                cout << "\tPuts r" << alu.instr.addr.rn << "(Value: " << rf[alu.instr.addr.rn]  << ") - r" << alu.instr.addr.rm << "(Value: " << rf[alu.instr.addr.rn] << ") in r" << alu.instr.addr.rd << "\n";
                rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] - rf[alu.instr.subr.rm]);
                cout << "\t\tFinal value: " << rf[alu.instr.addr.rd] << "\n";
+					setCarryOverflow(rf[alu.instr.subr.rn] ,rf[alu.instr.subr.rm], OF_SUB);
+					setZeroNeg(rf[alu.instr.subr.rd]);
                break;
             case ALU_ADD3I:
                cout << "\tPuts r" << alu.instr.add3i.rn << "(Value: " << rf[alu.instr.add3i.rn]  << ") - imm (Value: " << rf[alu.instr.add3i.imm] << ") in r" << alu.instr.add3i.rd << "\n";
                rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);     // Original
                cout << "\t\tFinal value: " << rf[alu.instr.add3i.rd] << "\n";
+					setCarryOverflow(rf[alu.instr.add3i.rn],alu.instr.add3i.imm, OF_ADD);
+					setZeroNeg(rf[alu.instr.add3i.rd]);
                break;
             case ALU_SUB3I:
                cout << "\tPuts r" << alu.instr.sub3i.rn << "(Value: " << rf[alu.instr.sub3i.rn]  << ") - imm (Value: " << rf[alu.instr.sub3i.imm] << ") in r" << alu.instr.sub3i.rd << "\n";
                rf.write(alu.instr.sub3i.rd, rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
                cout << "\t\tFinal value: " << rf[alu.instr.sub3i.rd] << "\n";
+					setCarryOverflow(rf[alu.instr.sub3i.rn],alu.instr.sub3i.imm, OF_SUB);
+					setZeroNeg(rf[alu.instr.sub3i.rd];
                break;
             case ALU_MOV:
                cout << "\tMoving " << alu.instr.mov.imm << " into r" << alu.instr.mov.rdn << "\n";
@@ -280,11 +294,15 @@ void execute() {
                cout << "\tPuts r" << alu.instr.add8i.rdn << "(Value: " << rf[alu.instr.add8i.rdn]  << ") - imm (Value: " << rf[alu.instr.add8i.imm] << ") in r" << alu.instr.add8i.rdn << "\n";
                rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);    // Original
                cout << "\t\tFinal value: " << rf[alu.instr.add8i.rdn] << "\n";
+					setCarryOverflow(rf[alu.instr.add8i.rdn],alu.instr.add8i.imm, OF_ADD);
+					setZeroNeg(rf[alu.instr.add8i.rdn]);
                break;
             case ALU_SUB8I:
                cout << "\tPuts r" << alu.instr.sub8i.rdn << "(Value: " << rf[alu.instr.sub8i.rdn]  << ") - imm (Value: " << rf[alu.instr.sub8i.imm] << ") in r" << alu.instr.sub8i.rdn << "\n";
                rf.write(alu.instr.sub8i.rdn, rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
                cout << "\t\tFinal value: " << rf[alu.instr.sub8i.rdn] << "\n";
+					setCarryOverflow(rf[alu.instr.sub8i.rdn], alu.instr.sub8i.imm, OF_SUB);
+					setZeroNeg(rf[alu.instr.sub8i.rdn]);
                break;
             default:
                break;
