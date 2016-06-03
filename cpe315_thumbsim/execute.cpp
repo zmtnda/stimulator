@@ -238,6 +238,9 @@ void execute() {
    switch(itype) {
       case ALU:
          add_ops = decode(alu);
+<<<<<<< HEAD
+      
+=======
          switch(add_ops) {
             case ALU_LSLI:
                rf.write(alu.instr.lsli.rd, rf[alu.instr.lsli.rm] << alu.instr.lsli.imm);
@@ -313,6 +316,7 @@ void execute() {
                break;
          }
          break;
+>>>>>>> a86c29d2223e7ec2598a4a973795d10e2ad7b59d
       case BL:
          // This instruction is complete, nothing needed here
          bl_ops = decode(blupper);
@@ -352,11 +356,15 @@ void execute() {
          switch(sp_ops) {
             case SP_MOV:
                if (sp.instr.mov.d) {
-                  cout << "\tMoving r" << sp.instr.mov.rm << " into SP\n";
+                  //cout << "\tMoving r" << sp.instr.mov.rm << " into SP\n";
                   rf.write(SP_REG, rf[sp.instr.mov.rm]);
+<<<<<<< HEAD
+                  //cout << "\t\tSP is now " << rf[SP_REG] << "\n";
+=======
                   stats.numRegWrites++;
                   stats.numRegReads++;
                   cout << "\t\tSP is now " << rf[SP_REG] << "\n";
+>>>>>>> a86c29d2223e7ec2598a4a973795d10e2ad7b59d
                }
                else {
                   rf.write(sp.instr.mov.rd, rf[sp.instr.mov.rm]);
@@ -457,7 +465,7 @@ void execute() {
                for (i = 0; i < 8; i++) {
                   //                  cerr << "\tShould I push r" << i << " ?\n";                                          // Debug, remove later
                   if (misc.instr.push.reg_list & (int) pow(2, i)) {
-                     cout << "\t\tPushing r" << i << ", value: " << rf[i] <<"\n";                                         // Debug, remove later
+                     //cout << "\t\tPushing r" << i << ", value: " << rf[i] <<"\n";                                         // Debug, remove later
                      dmem.write(addr, rf[i]);
                      caches.access(addr);
                      stats.numRegReads++;
@@ -485,7 +493,7 @@ void execute() {
                      rf.write(i, dmem[addr]);
                      stats.numRegWrites++;
                      caches.access(addr);
-                     cout << "\tPopping r" << i << ", value: " << rf[i] <<"\n";                                          // Debug, remove later
+                     //cout << "\tPopping r" << i << ", value: " << rf[i] <<"\n";                                          // Debug, remove later
                      addr += 4;
                   }
                }
@@ -502,16 +510,25 @@ void execute() {
                
                break;
             case MISC_SUB:
-               cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") - imm (Value: " << misc.instr.sub.imm << ") in SP\n";
+               //cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") - imm (Value: " << misc.instr.sub.imm << ") in SP\n";
                rf.write(SP_REG, SP - (misc.instr.sub.imm*4));
+<<<<<<< HEAD
+               //cout << "\t\tFinal value: " << rf[SP_REG] << "\n";
+=======
                stats.numRegWrites++;
                cout << "\t\tFinal value: " << rf[SP_REG] << "\n";
+>>>>>>> a86c29d2223e7ec2598a4a973795d10e2ad7b59d
                break;
             case MISC_ADD:
-               cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") + imm (Value: " << misc.instr.add.imm << ") in SP\n";
+               //cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") + imm (Value: " << misc.instr.add.imm << ") in SP\n";
                rf.write(SP_REG, SP + (misc.instr.add.imm*4));
+<<<<<<< HEAD
+               //cout << "\t\tFinal value: " << rf[SP_REG] << "\n";
+
+=======
                stats.numRegWrites++;
                cout << "\t\tFinal value: " << rf[SP_REG] << "\n";
+>>>>>>> a86c29d2223e7ec2598a4a973795d10e2ad7b59d
                break;
          }
          break;
@@ -540,7 +557,7 @@ void execute() {
                rf.write(i, dmem[addr]);
                stats.numRegWrites++;
                caches.access(addr);
-               cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
+               //cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
                addr += 4;
             }
          }
@@ -561,7 +578,7 @@ void execute() {
                dmem.write(addr, rf[i]);
                stats.numRegReads++;
                caches.access(addr);
-               cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
+               //cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
                addr += 4;
             }
          }
@@ -593,13 +610,17 @@ void execute() {
          break;
       case ADD_SP:
          decode(addsp);
-         cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") + imm (Value: " << misc.instr.add.imm << ") in r" << addsp.instr.add.rd << "\n";
+         //cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") + imm (Value: " << misc.instr.add.imm << ") in r" << addsp.instr.add.rd << "\n";
          rf.write(addsp.instr.add.rd, SP + (addsp.instr.add.imm*4));
+<<<<<<< HEAD
+         //cout << "\t\tFinal value: " << rf[addsp.instr.add.rd] << "\n";
+=======
          stats.numRegWrites++;
          cout << "\t\tFinal value: " << rf[addsp.instr.add.rd] << "\n";
+>>>>>>> a86c29d2223e7ec2598a4a973795d10e2ad7b59d
          break;
       default:
-         cout << "[ERROR] Unknown Instruction to be executed" << endl;
+         //cout << "[ERROR] Unknown Instruction to be executed" << endl;
          exit(1);
          break;
    }
