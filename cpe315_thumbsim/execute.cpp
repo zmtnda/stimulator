@@ -396,7 +396,7 @@ void execute() {
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
                dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
                caches.access(addr);
-               stats.numRegReads++;
+               stats.numRegReads += 2;
                break;
                
             case LDRI:
@@ -418,7 +418,7 @@ void execute() {
                temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
                //write it back to addr
                dmem.write(addr, temp);
-               stats.numRegReads++;
+               stats.numRegReads += 2;
                caches.access(addr);
                break;
                //page 144
@@ -430,7 +430,7 @@ void execute() {
                temp.set_data_ubyte4(0, dmem[addr] & 0xff);
                rf.write(ld_st.instr.ld_st_imm.rt, temp);
                stats.numRegWrites++;
-               stats.numRegReads++;
+               stats.numRegReads += 2;
                caches.access(addr);
                break;
                //page 181
@@ -443,7 +443,7 @@ void execute() {
                temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
                dmem.write(addr, temp);
                caches.access(addr);
-               stats.numRegReads++;
+               stats.numRegReads += 2;
                //read a byte only
                break;
                //LDRB <Rt>, [<rn>, <Rm>]
