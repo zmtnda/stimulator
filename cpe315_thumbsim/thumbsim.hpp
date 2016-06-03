@@ -702,6 +702,7 @@ class Stats {
 
       void print();
 };
+
 class Options {
    public:
       Options() : program(false), dump(false), instrs(false), writes(false),
