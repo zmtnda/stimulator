@@ -371,12 +371,15 @@ void execute() {
          // to implement ldrb/strb, ldm/stm and push/pop
          ldst_ops = decode(ld_st);
          switch(ldst_ops) {
+            //page 177
+            //STR <Rt>, [SP, #<imm8>]
             case STRI:
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
                dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
                caches.access(addr);
                stats.numRegReads++;
                break;
+            
             case LDRI:
                // Permitted values are multiples of 4 page 139
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
@@ -385,43 +388,55 @@ void execute() {
                stats.numRegReads++;
                caches.access(addr);
                break;
+            //STR <Rt>, [<Rn> {,#<imm5>}]
             case STRBI:
                // dont need the address to be multiple of 4
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
+               //read into temp
                temp = dmem[addr];
+               //modified first byte of temp with first byte of rt
+               //get a byte from the register
                temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
+               //write it back to addr
                dmem.write(addr, temp);
                stats.numRegReads++;
                caches.access(addr);
                break;
+            //page 144
             case LDRBI:
+               //get the address
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
                rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
                stats.numRegWrites++;
                stats.numRegReads++;
                caches.access(addr);
-               temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
                break;
+            //page 181 
+            //STR <Rt>, [<Rn>, <Rm>]
             case STRBR:
                //calculate the address
                addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
+               temp = dmem[addr];
                //store the word in target register
-               dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
+               temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
+               dmem.write(addr, temp);
                caches.access(addr);
                stats.numRegReads++;
                //read a byte only
-               temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
                break;
+            //LDRB <Rt>, [<rn>, <Rm>]
+            //page 145
             case LDRBR:
                //calculate the address
                addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
+               temp = rf[ld_st.instr.ld_st_reg.rt];
+               //read a byte only
+               temp.set_data_ubyte4(0, dmem[addr] & 0xff);
                //write the word to register
                rf.write(ld_st.instr.ld_st_reg.rt, dmem[addr]);
                stats.numRegWrites++;
                stats.numRegReads += 2;
                caches.access(addr);
-               //read a byte only
-               temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt] & 0xff);
                break;
          }
          break;
@@ -446,7 +461,6 @@ void execute() {
                      addr += 4;
                   }
                }
-               
                if (misc.instr.push.m & 0x1) {
                   dmem.write(addr, LR);
                   caches.access(addr);
