@@ -406,7 +406,10 @@ void execute() {
             case LDRBI:
                //get the address
                addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
-               rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
+               //read the 
+               temp = rf[ld_st.instr.ld_st_reg.rt];
+               temp.set_data_ubyte4(0, dmem[addr] & 0xff);
+               rf.write(ld_st.instr.ld_st_imm.rt, temp);
                stats.numRegWrites++;
                stats.numRegReads++;
                caches.access(addr);
@@ -433,7 +436,7 @@ void execute() {
                //read a byte only
                temp.set_data_ubyte4(0, dmem[addr] & 0xff);
                //write the word to register
-               rf.write(ld_st.instr.ld_st_reg.rt, dmem[addr]);
+               rf.write(ld_st.instr.ld_st_reg.rt, temp);
                stats.numRegWrites++;
                stats.numRegReads += 2;
                caches.access(addr);
