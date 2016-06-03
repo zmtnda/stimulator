@@ -132,7 +132,7 @@ bool Cache::access(unsigned int address) {
    int tag = getTag(address, tagSize);
    bool hitBool = false;
    
-   cout << "For a " << size << "block cache, the tag size is " << tagSize <<\
+   //cout << "For a " << size << "block cache, the tag size is " << tagSize <<\
          " and the tag mask is " << tagMask;
    
    if (entries[index] == tag) {
