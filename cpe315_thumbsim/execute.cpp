@@ -294,7 +294,7 @@ void execute() {
                stats.numRegReads++;
                cout << "\t\tFinal value: " << rf[alu.instr.sub3i.rd] << "\n";
 					setCarryOverflow(rf[alu.instr.sub3i.rn],alu.instr.sub3i.imm, OF_SUB);
-					setZeroNeg(rf[alu.instr.sub3i.rd];
+					setZeroNeg(rf[alu.instr.sub3i.rd]);
                break;
             case ALU_MOV:
                cout << "\tMoving " << alu.instr.mov.imm << " into r" << alu.instr.mov.rdn << "\n";
