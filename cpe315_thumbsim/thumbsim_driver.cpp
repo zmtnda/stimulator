@@ -111,8 +111,11 @@ int getTag(int address, int tagSize) {
 
 int getIndex(int address, int size, int blockSize) {
    int shift = log2(blockSize);  // Shift past the byte index
+   int indexMask = ((int) log2(size * blockSize)) >> shift;
    
-   return (address >> shift) & makeMask(size);
+   //cout << "Shift is " << shift << ", tagMask is " << indexMask << "\n";
+   
+   return (address >> shift) & indexMask;
 }
 
 // CPE 315: You must implement and call this function for each 
@@ -125,15 +128,15 @@ int getIndex(int address, int size, int blockSize) {
 // cache size in blocks). You should also update the "hits" and
 // "misses" counters.
 bool Cache::access(unsigned int address) {
-   static int tagSize = 32 - (int) log2(size * blocksize);
-   static int tagMask = makeMask(tagSize);
+   int tagSize = 32 - (int) log2(size * blocksize);
+   int tagMask = makeMask(tagSize);
    
-   int index = getIndex(address, size, blocksize);
+   int index = getIndex(address, tagMask, blocksize);
    int tag = getTag(address, tagSize);
    bool hitBool = false;
    
-   //cout << "For a " << size << "block cache, the tag size is " << tagSize <<\
-         " and the tag mask is " << tagMask;
+//   cout << "Blocksize is " << blocksize << ", tag size is " << tagSize << ", and tagMask is " << tagMask << "\n";
+//   cout << "Index is " << index << ", and tag is " << tag << "\n";
    
    if (entries[index] == tag) {
       hits++;

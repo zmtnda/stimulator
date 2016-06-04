@@ -6,7 +6,7 @@ run: all
 	vimdiff myFib.out outputs/fib.completeoutput
 
 l: all
-	lldb ./thumbsim -- -i -d -c 256 -f inputs/fib.sim
+	lldb ./thumbsim -- -i -d -s -c 256 -f inputs/fib.sim
 
 clean:
 	rm -rf ./*.o ./thumbsim
