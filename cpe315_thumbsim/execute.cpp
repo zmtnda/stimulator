@@ -23,6 +23,19 @@ unsigned int signExtend8to32ui(char i) {
    return static_cast<unsigned int>(static_cast<int>(i));
 }
 
+unsigned int signExtend11to32ui(short imme) {
+   unsigned short signBit = imme & 0x0400;
+   //get the sign bit
+   //signBit = imme & (signBit << 10);
+   if(signBit)
+   {
+      imme |= 0xF800; 
+   }
+   //mask the original bits
+   //imme &= ~(1 << 10);
+   //imme |= (signBit << 5);
+   return signExtend16to32ui(imme); 
+}
 ASPR flags = {0, 0, 0, 0};
 
 // CPE 315: You need to implement a function to set the Negative and Zero
@@ -255,8 +268,11 @@ void execute() {
                stats.numRegWrites++;
                stats.numRegReads++;
                break;
+            //page 117
             case ALU_ASRI: // Works just fine
-               rf.write(alu.instr.lsri.rd, rf[alu.instr.lsri.rm] >> alu.instr.lsri.imm);
+               rf.write(alu.instr.asri.rd, rf[alu.instr.asri.rm] >> alu.instr.asri.imm);
+               setCarryOverflow(rf[alu.instr.asri.rm],alu.instr.asri.imm, OF_SHIFT);
+               setZeroNeg(rf[alu.instr.asri.rd]);
                stats.numRegWrites++;
                stats.numRegReads++;
                break;
@@ -296,10 +312,12 @@ void execute() {
                setCarryOverflow(rf[alu.instr.sub3i.rn],alu.instr.sub3i.imm, OF_SUB);
                setZeroNeg(rf[alu.instr.sub3i.rd]);
                break;
+            //page 155
             case ALU_MOV:
                //cout << "\tMoving " << alu.instr.mov.imm << " into r" << alu.instr.mov.rdn << "\n";
                rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);                                  // Original
                stats.numRegWrites++;
+               setZeroNeg(rf[alu.instr.mov.rdn]);
                //cout << "\t\tFinal value: " << rf[alu.instr.mov.rdn] << "\n";
                break;
             case ALU_CMP:
