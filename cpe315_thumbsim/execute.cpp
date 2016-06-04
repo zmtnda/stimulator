@@ -255,25 +255,31 @@ void execute() {
                //page150
             case ALU_LSLI:
                rf.write(alu.instr.lsli.rd, rf[alu.instr.lsli.rm] << alu.instr.lsli.imm);
-               setCarryOverflow(rf[alu.instr.lsli.rm] ,alu.instr.lsli.imm, OF_SHIFT);
-               setZeroNeg(rf[alu.instr.lsli.rd]);
                stats.numRegWrites++;
+               stats.numRegReads++;
+               setCarryOverflow(rf[alu.instr.lsli.rm] ,alu.instr.lsli.imm, OF_SHIFT);
+               stats.numRegReads++;
+               setZeroNeg(rf[alu.instr.lsli.rd]);
                stats.numRegReads++;
                break;
                //page 152
             case ALU_LSRI:
                rf.write(alu.instr.lsri.rd, rf[alu.instr.lsri.rm] >> alu.instr.lsri.imm);
-               setCarryOverflow(rf[alu.instr.lsri.rm],alu.instr.lsri.imm, OF_SHIFT);
-               setZeroNeg(rf[alu.instr.lsri.rd]);
                stats.numRegWrites++;
+               stats.numRegReads++;
+               setCarryOverflow(rf[alu.instr.lsri.rm],alu.instr.lsri.imm, OF_SHIFT);
+               stats.numRegReads++;
+               setZeroNeg(rf[alu.instr.lsri.rd]);
                stats.numRegReads++;
                break;
             //page 117
             case ALU_ASRI: // Works just fine
                rf.write(alu.instr.asri.rd, rf[alu.instr.asri.rm] >> alu.instr.asri.imm);
-               setCarryOverflow(rf[alu.instr.asri.rm],alu.instr.asri.imm, OF_SHIFT);
-               setZeroNeg(rf[alu.instr.asri.rd]);
                stats.numRegWrites++;
+               stats.numRegReads++;
+               setCarryOverflow(rf[alu.instr.asri.rm],alu.instr.asri.imm, OF_SHIFT);
+               stats.numRegReads++;
+               setZeroNeg(rf[alu.instr.asri.rd]);
                stats.numRegReads++;
                break;
             case ALU_ADDR:
@@ -283,7 +289,9 @@ void execute() {
                stats.numRegReads += 2;
                //cout << "\t\tFinal value: " << rf[alu.instr.addr.rd] << "\n";
                setCarryOverflow(rf[alu.instr.addr.rn],rf[alu.instr.addr.rm], OF_ADD);
+               stats.numRegReads += 2;
                setZeroNeg(rf[alu.instr.addr.rd]);
+               stats.numRegReads++;
                break;
             case ALU_SUBR:
                //cout << "\tPuts r" << alu.instr.addr.rn << "(Value: " << rf[alu.instr.addr.rn]  << ") - r" << alu.instr.addr.rm << "(Value: " << rf[alu.instr.addr.rn] << ") in r" << alu.instr.addr.rd << "\n";
@@ -292,7 +300,9 @@ void execute() {
                stats.numRegReads += 2;
                //cout << "\t\tFinal value: " << rf[alu.instr.addr.rd] << "\n";
                setCarryOverflow(rf[alu.instr.subr.rn] ,rf[alu.instr.subr.rm], OF_SUB);
+               stats.numRegReads += 2;
                setZeroNeg(rf[alu.instr.subr.rd]);
+               stats.numRegReads++;
                break;
             case ALU_ADD3I:
                //cout << "\tPuts r" << alu.instr.add3i.rn << "(Value: " << rf[alu.instr.add3i.rn]  << ") - imm (Value: " << rf[alu.instr.add3i.imm] << ") in r" << alu.instr.add3i.rd << "\n";
@@ -301,7 +311,9 @@ void execute() {
                stats.numRegReads++;
                //cout << "\t\tFinal value: " << rf[alu.instr.add3i.rd] << "\n";
                setCarryOverflow(rf[alu.instr.add3i.rn],alu.instr.add3i.imm, OF_ADD);
+               stats.numRegReads++;
                setZeroNeg(rf[alu.instr.add3i.rd]);
+               stats.numRegReads++;
                break;
             case ALU_SUB3I:
                //cout << "\tPuts r" << alu.instr.sub3i.rn << "(Value: " << rf[alu.instr.sub3i.rn]  << ") - imm (Value: " << rf[alu.instr.sub3i.imm] << ") in r" << alu.instr.sub3i.rd << "\n";
@@ -310,7 +322,9 @@ void execute() {
                stats.numRegReads++;
                //cout << "\t\tFinal value: " << rf[alu.instr.sub3i.rd] << "\n";
                setCarryOverflow(rf[alu.instr.sub3i.rn],alu.instr.sub3i.imm, OF_SUB);
+               stats.numRegReads++;
                setZeroNeg(rf[alu.instr.sub3i.rd]);
+               stats.numRegReads++;
                break;
             //page 155
             case ALU_MOV:
@@ -318,13 +332,14 @@ void execute() {
                rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);                                  // Original
                stats.numRegWrites++;
                setZeroNeg(rf[alu.instr.mov.rdn]);
+               stats.numRegReads++;
                //cout << "\t\tFinal value: " << rf[alu.instr.mov.rdn] << "\n";
                break;
             case ALU_CMP:
                //cout << "\tComparing r" << alu.instr.cmp.rdn << " (value: " << rf[alu.instr.cmp.rdn] << ") with " << alu.instr.cmp.imm << "\n";
-               setCarryOverflow(alu.instr.cmp.rdn, alu.instr.cmp.imm, OF_SUB);
+               setCarryOverflow(rf[alu.instr.cmp.rdn], alu.instr.cmp.imm, OF_SUB);
                setZeroNeg(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm);
-               stats.numRegReads++;
+               stats.numRegReads += 2;
                //cout << "\t\tFlags are: C: " << (int) flags.C << " O: " << (int) flags.V << " Z: " << (int) flags.Z << " N:" << (int) flags.N << " \n";
                break;
             case ALU_ADD8I:
@@ -335,6 +350,7 @@ void execute() {
                //cout << "\t\tFinal value: " << rf[alu.instr.add8i.rdn] << "\n";
                setCarryOverflow(rf[alu.instr.add8i.rdn],alu.instr.add8i.imm, OF_ADD);
                setZeroNeg(rf[alu.instr.add8i.rdn]);
+               stats.numRegReads += 2;
                break;
             case ALU_SUB8I:
                //cout << "\tPuts r" << alu.instr.sub8i.rdn << "(Value: " << rf[alu.instr.sub8i.rdn]  << ") - imm (Value: " << rf[alu.instr.sub8i.imm] << ") in r" << alu.instr.sub8i.rdn << "\n";
@@ -344,6 +360,7 @@ void execute() {
                //cout << "\t\tFinal value: " << rf[alu.instr.sub8i.rdn] << "\n";
                setCarryOverflow(rf[alu.instr.sub8i.rdn], alu.instr.sub8i.imm, OF_SUB);
                setZeroNeg(rf[alu.instr.sub8i.rdn]);
+               stats.numRegReads += 2;
                break;
             default:
                break;
@@ -559,15 +576,22 @@ void execute() {
          // Once you've completed the checkCondition function,
          // this should work for all your conditional branches.
          if (checkCondition(cond.instr.b.cond)){
-            if (cond.instr.b.imm < 0)
+            offset = PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2;
+            if(offset < 0)
+            //if (cond.instr.b.imm < 0)
+            {
                stats.numForwardBranchesTaken++;
+               cout << "forward " << stats.numForwardBranchesTaken << "\n";
+            }
             else
                stats.numBackwardBranchesTaken++;
-            rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
+            rf.write(PC_REG,offset);
             stats.numRegWrites++;
          }
          else {
-            if (cond.instr.b.imm < 0)
+            if(offset < 0)
+            
+            //if (cond.instr.b.imm < 0)
                stats.numForwardBranchesNotTaken++;
             else
                stats.numBackwardBranchesNotTaken++;
@@ -577,11 +601,16 @@ void execute() {
          // Essentially the same as the conditional branches, but with no
          // condition check, and a different sized immediate field
          decode(uncond);
-         rf.write(PC_REG, PC + 2 * signExtend8to32ui(uncond.instr.b.imm) + 2);
-         if (uncond.instr.b.imm < 0)
-            stats.numForwardBranchesTaken++;
+         rf.write(PC_REG, PC + 2 * signExtend11to32ui(uncond.instr.b.imm) + 2);
+            stats.numRegWrites++;
+         offset = PC + 2 * signExtend11to32ui(uncond.instr.b.imm) + 2;
+         //if(offset > 0)
+         //if (uncond.instr.b.imm < 0)
+         /*{   stats.numForwardBranchesTaken++;
+               cout << "forward " << stats.numForwardBranchesTaken << "\n";
+         }
          else
-            stats.numBackwardBranchesTaken++;
+            stats.numBackwardBranchesTaken++;*/
          break;
       case LDM:
          decode(ldm);
