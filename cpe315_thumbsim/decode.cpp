@@ -320,7 +320,7 @@ MISC_Ops decode (const MISC_Type data) {
     }
     return MISC_ADD;
   }
-   return (MISC_Ops) NULL;                        // Added by Erik to silence Werror
+   return (MISC_Ops) NULL;
 }
 
 int decode (const COND_Type data) {
@@ -329,14 +329,14 @@ int decode (const COND_Type data) {
     printCond(data.instr.b.cond);
     cout << " 0x" << hex << rf[15] + 2*(int)((char)(data.instr.b.imm))+2 << endl;
   }
-   return NULL;                                    // Added by Erik to silence Werror, fix later
+   return (int) NULL;
 }
 
 int decode (const UNCOND_Type data) {
   if (opts.instrs) { 
     cout << "b 0x" << hex << rf[15] + 2*(int)((char)(data.instr.b.imm))+2 << endl;
   }
-   return NULL;                                    // Added by Erik to silence Werror, fix later
+   return (int) NULL;
 }
 
 BL_Ops decode (const BL_Type data) {
@@ -348,22 +348,22 @@ BL_Ops decode (const BL_Type data) {
 
 int decode (const LDM_Type data) {
   cout << "LDM_TYPE" << endl;
-   return NULL;                                    // Added by Erik to silence Werror, fix later
+   return (int) NULL;
 }
 
 int decode (const STM_Type data) {
   cout << "STM_TYPE" << endl;
-   return NULL;                                    // Added by Erik to silence Werror, fix later
+   return (int) NULL;
 }
 
 int decode (const LDRL_Type data) {
   cout << "LDRL_TYPE" << endl;
-   return NULL;                                    // Added by Erik to silence Werror, fix later
+   return (int) NULL;
 }
 
 int decode (const ADD_SP_Type data) {
   if (opts.instrs) { 
     cout << "add r" << data.instr.add.rd << ", sp, #" << data.instr.add.imm << endl;
   }
-   return NULL;                                    // Added by Erik to silence Werror, fix later
+   return (int) NULL;
 }
