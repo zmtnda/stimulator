@@ -103,17 +103,19 @@ int makeMask(int numBits) {
    return (1 << numBits) - 1;
 }
 
-int getTag(int address, int tagSize) {
+unsigned int getTag(unsigned int address, int tagSize) {
    int shift = 32 - tagSize;
+   
+//   cout << "Tag is " << (address >> shift) << " and masked is is " << ((address >> shift) & makeMask(tagSize)) << "\n";
    
    return (address >> shift) & makeMask(tagSize);
 }
 
-int getIndex(int address, int size, int blockSize) {
+unsigned int getIndex(int address, int size, int blockSize) {
    int shift = log2(blockSize);  // Shift past the byte index
-   int indexMask = ((int) log2(size * blockSize)) >> shift;
+   unsigned int indexMask = makeMask(size / blockSize);
    
-   //cout << "Shift is " << shift << ", tagMask is " << indexMask << "\n";
+//   cout << "Shift is " << shift << ", IndexMask is " << indexMask << "\n";
    
    return (address >> shift) & indexMask;
 }
@@ -128,15 +130,17 @@ int getIndex(int address, int size, int blockSize) {
 // cache size in blocks). You should also update the "hits" and
 // "misses" counters.
 bool Cache::access(unsigned int address) {
-   int tagSize = 32 - (int) log2(size * blocksize);
-   int tagMask = makeMask(tagSize);
+   int tagSize = 32 - (int) log2(size);
+   unsigned int tagMask = makeMask(tagSize);
    
-   int index = getIndex(address, tagMask, blocksize);
-   int tag = getTag(address, tagSize);
+   uint16_t index = getIndex(address, tagMask, blocksize);
+   uint16_t tag = getTag(address, tagSize);
    bool hitBool = false;
    
-//   cout << "Blocksize is " << blocksize << ", tag size is " << tagSize << ", and tagMask is " << tagMask << "\n";
-//   cout << "Index is " << index << ", and tag is " << tag << "\n";
+//   cout << "\tAddress is " << address;
+//   cout << ", Blocksize is " << blocksize << ", size is " << size << ", index size is " << log2(size / blocksize);
+//   cout << ", tag size is " << tagSize << ", and tagMask is " << tagMask << "\n";
+//   cout << "\t\tIndex is " << index << ", and tag is " << tag << "\n";
    
    if (entries[index] == tag) {
       hits++;
