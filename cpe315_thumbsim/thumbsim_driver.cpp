@@ -106,7 +106,6 @@ int makeMask(int numBits) {
 unsigned int getTag(unsigned int address, int tagSize) {
    int shift = 32 - tagSize;
    
-//   cout << "Tag is " << (address >> shift) << " and masked is is " << ((address >> shift) & makeMask(tagSize)) << "\n";
    
    return (address >> shift) & makeMask(tagSize);
 }
@@ -115,7 +114,6 @@ unsigned int getIndex(int address, int size, int blockSize) {
    int shift = log2(blockSize);  // Shift past the byte index
    unsigned int indexMask = makeMask(size / blockSize);
    
-//   cout << "Shift is " << shift << ", IndexMask is " << indexMask << "\n";
    
    return (address >> shift) & indexMask;
 }
@@ -136,11 +134,6 @@ bool Cache::access(unsigned int address) {
    uint16_t index = getIndex(address, tagMask, blocksize);
    uint16_t tag = getTag(address, tagSize);
    bool hitBool = false;
-   
-//   cout << "\tAddress is " << address;
-//   cout << ", Blocksize is " << blocksize << ", size is " << size << ", index size is " << log2(size / blocksize);
-//   cout << ", tag size is " << tagSize << ", and tagMask is " << tagMask << "\n";
-//   cout << "\t\tIndex is " << index << ", and tag is " << tag << "\n";
    
    if (entries[index] == tag) {
       hits++;
