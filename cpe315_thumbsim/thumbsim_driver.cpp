@@ -1,4 +1,6 @@
 #include "thumbsim.hpp"
+#include <stdint.h>
+#include <stdio.h>
 
 template<>
 void Memory<Data8, Data32>::write(const unsigned int addr, const Data32 data) {
@@ -99,42 +101,42 @@ void Memory<Data32, Data32>::dump(DataType dt) const {
   }
 }
 
-int makeMask(int numBits) {
-   return (1 << numBits) - 1;
+unsigned int makeMask(int numBits) {
+   unsigned int mask = 0;
+   for(int i = 0; i < numBits; i++)
+      mask |= (1 << i);
+   //return (1 << numBits) - 1;
+   return mask;
 }
 
 unsigned int getTag(unsigned int address, int tagSize) {
    int shift = 32 - tagSize;
    
-   
    return (address >> shift) & makeMask(tagSize);
 }
 
-unsigned int getIndex(int address, int size, int blockSize) {
+unsigned int getIndex(unsigned int address, int size, int blockSize) {
    int shift = log2(blockSize);  // Shift past the byte index
-   unsigned int indexMask = makeMask(size / blockSize);
-   
-   
+   unsigned int indexMask = makeMask((unsigned int)log2(size / blockSize));
    return (address >> shift) & indexMask;
 }
 
 // CPE 315: You must implement and call this function for each 
 // memory address (dmem only) accessed by the program. It should return 
 // true for a cache hit and false for a cache miss, and on a cache miss, 
-// should update the cache tags. The "entries" vector contains the cache
+// should update the cache tags. The "ntries" vector contains the cache
 // tags, so if you want to put the tag "t" into cache block "b", then
 // evaluate "entries[b] = t;". The locals you have available to help
 // you make this decision are "blocksize" (in bytes) and "size" (total
 // cache size in blocks). You should also update the "hits" and
 // "misses" counters.
 bool Cache::access(unsigned int address) {
-   int tagSize = 32 - (int) log2(size);
+   int tagSize = 32 - ((int) log2(size/blocksize) + (int) log2(blocksize));
    unsigned int tagMask = makeMask(tagSize);
    
-   uint16_t index = getIndex(address, tagMask, blocksize);
+   uint16_t index = getIndex(address, size, blocksize);
    uint16_t tag = getTag(address, tagSize);
    bool hitBool = false;
-   
    if (entries[index] == tag) {
       hits++;
       hitBool = true;
@@ -143,7 +145,6 @@ bool Cache::access(unsigned int address) {
       misses++;
       entries[index] = tag;
    }
-
    return hitBool;
 }
 
