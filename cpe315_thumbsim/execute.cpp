@@ -270,7 +270,7 @@ void execute() {
                setZeroNeg(rf[alu.instr.lsri.rd]);
                break;
             //page 117
-            case ALU_ASRI: // Works just fine
+            case ALU_ASRI:
                rf.write(alu.instr.asri.rd, rf[alu.instr.asri.rm] >> alu.instr.asri.imm);
                stats.numRegWrites++;
                setCarryOverflow(rf[alu.instr.asri.rm],alu.instr.asri.imm, OF_SHIFT);
@@ -278,71 +278,55 @@ void execute() {
                setZeroNeg(rf[alu.instr.asri.rd]);
                break;
             case ALU_ADDR:
-               //cout << "\tPuts r" << alu.instr.addr.rn << "(Value: " << rf[alu.instr.addr.rn]  << ") + r" << alu.instr.addr.rm << "(Value: " << rf[alu.instr.addr.rn] << ") in r" << alu.instr.addr.rd << "\n";
-               rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);     // Original
+               rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);
                stats.numRegWrites++;
-               //cout << "\t\tFinal value: " << rf[alu.instr.addr.rd] << "\n";
                setCarryOverflow(rf[alu.instr.addr.rn],rf[alu.instr.addr.rm], OF_ADD);
                stats.numRegReads += 2;
                setZeroNeg(rf[alu.instr.addr.rd]);
                break;
             case ALU_SUBR:
-               //cout << "\tPuts r" << alu.instr.addr.rn << "(Value: " << rf[alu.instr.addr.rn]  << ") - r" << alu.instr.addr.rm << "(Value: " << rf[alu.instr.addr.rn] << ") in r" << alu.instr.addr.rd << "\n";
                rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] - rf[alu.instr.subr.rm]);
                stats.numRegWrites++;
-               //cout << "\t\tFinal value: " << rf[alu.instr.addr.rd] << "\n";
                setCarryOverflow(rf[alu.instr.subr.rn] ,rf[alu.instr.subr.rm], OF_SUB);
                stats.numRegReads += 2;
                setZeroNeg(rf[alu.instr.subr.rd]);
                break;
             case ALU_ADD3I:
-               //cout << "\tPuts r" << alu.instr.add3i.rn << "(Value: " << rf[alu.instr.add3i.rn]  << ") - imm (Value: " << rf[alu.instr.add3i.imm] << ") in r" << alu.instr.add3i.rd << "\n";
-               rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);     // Original
+               rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);
                stats.numRegWrites++;
-               //cout << "\t\tFinal value: " << rf[alu.instr.add3i.rd] << "\n";
                setCarryOverflow(rf[alu.instr.add3i.rn],alu.instr.add3i.imm, OF_ADD);
                setZeroNeg(rf[alu.instr.add3i.rd]);
                stats.numRegReads++;
                break;
             case ALU_SUB3I:
-               //cout << "\tPuts r" << alu.instr.sub3i.rn << "(Value: " << rf[alu.instr.sub3i.rn]  << ") - imm (Value: " << rf[alu.instr.sub3i.imm] << ") in r" << alu.instr.sub3i.rd << "\n";
                rf.write(alu.instr.sub3i.rd, rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
                stats.numRegWrites++;
-               //cout << "\t\tFinal value: " << rf[alu.instr.sub3i.rd] << "\n";
                setCarryOverflow(rf[alu.instr.sub3i.rn],alu.instr.sub3i.imm, OF_SUB);
                setZeroNeg(rf[alu.instr.sub3i.rd]);
                stats.numRegReads++;
                break;
             //page 155
             case ALU_MOV:
-               //cout << "\tMoving " << alu.instr.mov.imm << " into r" << alu.instr.mov.rdn << "\n";
-               rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);                                  // Original
+               rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);
                stats.numRegWrites++;
                setZeroNeg(rf[alu.instr.mov.rdn]);
-               //cout << "\t\tFinal value: " << rf[alu.instr.mov.rdn] << "\n";
                break;
             case ALU_CMP:
-               //cout << "\tComparing r" << alu.instr.cmp.rdn << " (value: " << rf[alu.instr.cmp.rdn] << ") with " << alu.instr.cmp.imm << "\n";
                setCarryOverflow(rf[alu.instr.cmp.rdn], alu.instr.cmp.imm, OF_SUB);
                setZeroNeg(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm);
                stats.numRegReads++;
-               //cout << "\t\tFlags are: C: " << (int) flags.C << " O: " << (int) flags.V << " Z: " << (int) flags.Z << " N:" << (int) flags.N << " \n";
                break;
             case ALU_ADD8I:
-               //cout << "\tPuts r" << alu.instr.add8i.rdn << "(Value: " << rf[alu.instr.add8i.rdn]  << ") - imm (Value: " << rf[alu.instr.add8i.imm] << ") in r" << alu.instr.add8i.rdn << "\n";
-               rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);    // Original
+               rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);
                stats.numRegWrites++;
                stats.numRegReads++;
-               //cout << "\t\tFinal value: " << rf[alu.instr.add8i.rdn] << "\n";
                setCarryOverflow(rf[alu.instr.add8i.rdn],alu.instr.add8i.imm, OF_ADD);
                setZeroNeg(rf[alu.instr.add8i.rdn]);
                break;
             case ALU_SUB8I:
-               //cout << "\tPuts r" << alu.instr.sub8i.rdn << "(Value: " << rf[alu.instr.sub8i.rdn]  << ") - imm (Value: " << rf[alu.instr.sub8i.imm] << ") in r" << alu.instr.sub8i.rdn << "\n";
                rf.write(alu.instr.sub8i.rdn, rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
                stats.numRegWrites++;
                stats.numRegReads++;
-               //cout << "\t\tFinal value: " << rf[alu.instr.sub8i.rdn] << "\n";
                setCarryOverflow(rf[alu.instr.sub8i.rdn], alu.instr.sub8i.imm, OF_SUB);
                setZeroNeg(rf[alu.instr.sub8i.rdn]);
                break;
@@ -389,12 +373,9 @@ void execute() {
          switch(sp_ops) {
             case SP_MOV:
                if (sp.instr.mov.d) {
-                  //cout << "\tMoving r" << sp.instr.mov.rm << " into SP\n";
                   rf.write(SP_REG, rf[sp.instr.mov.rm]);
-                  //cout << "\t\tSP is now " << rf[SP_REG] << "\n";
                   stats.numRegWrites++;
                   stats.numRegReads++;
-                  //cout << "\t\tSP is now " << rf[SP_REG] << "\n";
                }
                else {
                   rf.write(sp.instr.mov.rd, rf[sp.instr.mov.rm]);
@@ -491,7 +472,6 @@ void execute() {
          misc_ops = decode(misc);
          switch(misc_ops) {
             case MISC_PUSH:
-               //cout << "\tPushing: " << rf[alu.instr.addr.rd] << "\n";
                BitCount = countBits(misc.instr.push.reg_list, misc.instr.push.m);
                // Don't forget to count m bit
                addr = SP - 4 * BitCount; // Number of registers
@@ -499,9 +479,7 @@ void execute() {
                //// Debug, remove later
                
                for (i = 0; i < 8; i++) {
-                  //                  cerr << "\tShould I push r" << i << " ?\n";                                          // Debug, remove later
                   if (misc.instr.push.reg_list & (int) pow(2, i)) {
-                     //cout << "\t\tPushing r" << i << ", value: " << rf[i] <<"\n";                                         // Debug, remove later
                      dmem.write(addr, rf[i]);
                      stats.numMemWrites++;
                      caches.access(addr);
@@ -523,16 +501,12 @@ void execute() {
                BitCount = countBits(misc.instr.pop.reg_list, misc.instr.pop.m);
                addr = SP;
                stats.numRegReads++;
-               //               cerr << "Made it to Pop\n";                                          // Debug, remove later
                for (i = 0; i < 8; i++) {
-                  //                  cerr << "\tShould I pop r" << i << " ?\n";                                          // Debug, remove later
                   if (misc.instr.pop.reg_list & (1 << i)) {
-                     //                     cerr << "\t\tPopping r" << i << "\n";                                          // Debug, remove later
                      rf.write(i, dmem[addr]);
                      stats.numRegWrites++;
                      stats.numMemReads++;
                      caches.access(addr);
-                     //cout << "\tPopping r" << i << ", value: " << rf[i] <<"\n";                                          // Debug, remove later
                      addr += 4;
                   }
                }
@@ -550,20 +524,14 @@ void execute() {
                
                break;
             case MISC_SUB:
-               //cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") - imm (Value: " << misc.instr.sub.imm << ") in SP\n";
                rf.write(SP_REG, SP - (misc.instr.sub.imm*4));
-               //cout << "\            t\tFinal value: " << rf[SP_REG] << "\n";
                stats.numRegWrites++;
-               //cout << "\t\tFinal value: " << rf[SP_REG] << "\n";
                stats.numRegReads++;
                break;
             case MISC_ADD:
-               //cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") + imm (Value: " << misc.instr.add.imm << ") in SP\n";
                rf.write(SP_REG, SP + (misc.instr.add.imm*4));
-               //cout << "\t\tFinal value: " << rf[SP_REG] << "\n";
                stats.numRegWrites++;
             stats.numRegReads++;
-               //cout <<iii "\t\tFinal value: " << rf[SP_REG] << "\n";
                break;
          }
          break;
@@ -604,13 +572,6 @@ void execute() {
          stats.numRegWrites++;
          stats.numRegReads++;
          stats.numBranches++;
-          //if(offset > 0)
-         //if (uncond.instr.b.imm < 0)
-         /*{   stats.numForwardBranchesTaken++;
-               cout << "forward " << stats.numForwardBranchesTaken << "\n";
-         }
-         else
-            stats.numBackwardBranchesTaken++;*/
          break;
       case LDM:
          decode(ldm);
@@ -624,7 +585,6 @@ void execute() {
                stats.numMemReads++;
                stats.numRegWrites++;
                caches.access(addr);
-               //cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
                addr += 4;
             }
          }
@@ -644,7 +604,6 @@ void execute() {
                stats.numRegReads++;
                stats.numMemWrites++;
                caches.access(addr);
-               //cout << "\t\tLoading multiple" << i << ", value:" << rf[i] << "\n";
                addr += 4;
             }
          }
@@ -676,9 +635,7 @@ void execute() {
          break;
       case ADD_SP:
          decode(addsp);
-         //cout << "\tPuts SP (Value: " << rf[SP_REG]  << ") + imm (Value: " << misc.instr.add.imm << ") in r" << addsp.instr.add.rd << "\n";
          rf.write(addsp.instr.add.rd, SP + (addsp.instr.add.imm*4));
-         //cout << "\t\tFinal value: " << rf[addsp.instr.add.rd] << "\n";
          stats.numRegWrites++;
          stats.numRegReads++;
          break;
