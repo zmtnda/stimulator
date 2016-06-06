@@ -8,5 +8,11 @@ run: all
 l: all
 	lldb ./thumbsim -- -i -d -s -c 256 -f inputs/fib.sim
 
+s: all
+	./thumbsim -i -d -s -c 256 -f inputs/shang.O2.sim > shang2.out
+
+sl: all
+	lldb ./thumbsim -- -i -d -s -c 256 -f inputs/shang.O2.sim > shang2.out
+
 clean:
 	rm -rf ./*.o ./thumbsim
