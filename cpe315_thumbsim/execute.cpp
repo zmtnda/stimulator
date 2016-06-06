@@ -113,6 +113,7 @@ void setZeroNeg(int result) {
 // CPE E15: You're given the code for evaluating BEQ, and you'll need to
 // complete the rest of these conditions. See Page 99 of the armv6 manual
 static int checkCondition(unsigned short cond) {
+                                                                                                         //stats.numRegReads++;
    switch(cond) {
       case EQ:
          if (flags.Z == 1) {
@@ -302,7 +303,6 @@ void execute() {
                setCarryOverflow(rf[alu.instr.add3i.rn],alu.instr.add3i.imm, OF_ADD);
                setZeroNeg(rf[alu.instr.add3i.rd]);
                stats.numRegReads++;
-               stats.numRegReads++;
                break;
             case ALU_SUB3I:
                //cout << "\tPuts r" << alu.instr.sub3i.rn << "(Value: " << rf[alu.instr.sub3i.rn]  << ") - imm (Value: " << rf[alu.instr.sub3i.imm] << ") in r" << alu.instr.sub3i.rd << "\n";
@@ -311,7 +311,6 @@ void execute() {
                //cout << "\t\tFinal value: " << rf[alu.instr.sub3i.rd] << "\n";
                setCarryOverflow(rf[alu.instr.sub3i.rn],alu.instr.sub3i.imm, OF_SUB);
                setZeroNeg(rf[alu.instr.sub3i.rd]);
-               stats.numRegReads++;
                stats.numRegReads++;
                break;
             //page 155
@@ -326,6 +325,7 @@ void execute() {
                //cout << "\tComparing r" << alu.instr.cmp.rdn << " (value: " << rf[alu.instr.cmp.rdn] << ") with " << alu.instr.cmp.imm << "\n";
                setCarryOverflow(rf[alu.instr.cmp.rdn], alu.instr.cmp.imm, OF_SUB);
                setZeroNeg(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm);
+               stats.numRegReads++;
                //cout << "\t\tFlags are: C: " << (int) flags.C << " O: " << (int) flags.V << " Z: " << (int) flags.Z << " N:" << (int) flags.N << " \n";
                break;
             case ALU_ADD8I:
